@@ -27,9 +27,13 @@ func TestEvalBinaryOp(t *testing.T) {
 
 	inputs := []string{
 		"(+ 5 10)",
+		"(* 2 3)",
+		"(+ (+ 2 3) (+ 1 2))",
 	}
 	wants := []object.Object{
 		&object.IntObject{Value: 15},
+		&object.IntObject{Value: 6},
+		&object.IntObject{Value: 8},
 	}
 
 	for i, tt := range inputs {
@@ -39,7 +43,7 @@ func TestEvalBinaryOp(t *testing.T) {
 		}
 		want := wants[i]
 		if diff := cmp.Diff(want, got); diff != "" {
-			t.Error(diff)
+			t.Errorf("input: %s, diff=%v", tt, diff)
 		}
 	}
 }
