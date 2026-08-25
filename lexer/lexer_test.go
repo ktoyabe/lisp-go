@@ -7,6 +7,18 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func testLexer(t *testing.T, input string, want []token.Token) {
+	l := New(input)
+
+	for _, tt := range want {
+		tok := l.NextToken()
+
+		if diff := cmp.Diff(tok, tt); diff != "" {
+			t.Errorf("got: %v, want: %v", tok, tt)
+		}
+	}
+}
+
 func TestNextTokenINT(t *testing.T) {
 	input := `
 	(+ 5 10)
@@ -20,16 +32,7 @@ func TestNextTokenINT(t *testing.T) {
 		{Type: token.EOF, Literal: ""},
 	}
 
-	l := New(input)
-
-	for _, tt := range tests {
-		tok := l.NextToken()
-
-		if diff := cmp.Diff(tok, tt); diff != "" {
-			t.Errorf("actual: %v, expected: %v", tok, tt)
-		}
-	}
-
+	testLexer(t, input, tests)
 }
 
 func TestNextTokenSYMBOL(t *testing.T) {
@@ -49,13 +52,5 @@ func TestNextTokenSYMBOL(t *testing.T) {
 		{Type: token.EOF, Literal: ""},
 	}
 
-	l := New(input)
-
-	for _, tt := range tests {
-		tok := l.NextToken()
-
-		if diff := cmp.Diff(tok, tt); diff != "" {
-			t.Errorf("actual: %v, expected: %v", tok, tt)
-		}
-	}
+	testLexer(t, input, tests)
 }
