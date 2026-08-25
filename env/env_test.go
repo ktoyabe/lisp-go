@@ -9,9 +9,9 @@ import (
 
 func TestEnvGetSuccess(t *testing.T) {
 	e := New()
-	e.set("a", &object.IntObject{Value: 3})
+	e.Set("a", &object.IntObject{Value: 3})
 
-	o, ok := e.get("a")
+	o, ok := e.Get("a")
 	if !ok {
 		t.Errorf("want=%v, got=%v", true, ok)
 	}
@@ -23,9 +23,9 @@ func TestEnvGetSuccess(t *testing.T) {
 
 func TestEnvGetFail(t *testing.T) {
 	e := New()
-	e.set("a", &object.IntObject{Value: 3})
+	e.Set("a", &object.IntObject{Value: 3})
 
-	_, ok := e.get("b")
+	_, ok := e.Get("b")
 	if ok {
 		t.Errorf("want=%v, got=%v", false, ok)
 	}
@@ -37,26 +37,26 @@ func intObj(val int) *object.IntObject {
 
 func TestExtendEnvGet(t *testing.T) {
 	p := New()
-	p.set("a", intObj(3))
-	p.set("b", intObj(4))
+	p.Set("a", intObj(3))
+	p.Set("b", intObj(4))
 
 	e := Extend(p)
-	e.set("a", intObj(5))
+	e.Set("a", intObj(5))
 
 	// overwrite
-	o1, _ := e.get("a")
+	o1, _ := e.Get("a")
 	if diff := cmp.Diff(o1, intObj(5)); diff != "" {
 		t.Error(diff)
 	}
 
 	// env missing, parent hit
-	o2, _ := e.get("b")
+	o2, _ := e.Get("b")
 	if diff := cmp.Diff(o2, intObj(4)); diff != "" {
 		t.Error(diff)
 	}
 
 	// env and parent missing
-	_, ok := e.get("c")
+	_, ok := e.Get("c")
 	if ok {
 		t.Errorf("want=%v, got=%v", false, ok)
 	}

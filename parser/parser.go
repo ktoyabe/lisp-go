@@ -62,6 +62,9 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 			}
 			o := &object.IntObject{Value: i}
 			list = append(list, o)
+		case token.DEFINE:
+			o := &object.SymbolObject{Value: tok.Literal}
+			list = append(list, o)
 		case token.LPAREN:
 			subList, err := p.parseList()
 			if err != nil {
@@ -69,10 +72,11 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 			}
 			list = append(list, subList)
 		case token.RPAREN:
-
 			return &object.ListObject{Value: list}, nil
 		default:
-			return nil, fmt.Errorf("Unsupported token. type=%v, literal=%v", tok.Type, tok.Literal)
+			o := &object.SymbolObject{Value: tok.Literal}
+			list = append(list, o)
+			// return nil, fmt.Errorf("Unsupported token. type=%v, literal=%v", tok.Type, tok.Literal)
 		}
 	}
 

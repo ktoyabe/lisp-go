@@ -16,9 +16,34 @@ func eval_obj(obj object.Object, env *env.Env) (object.Object, error) {
 		return v, nil
 	case *object.ListObject:
 		return eval_list(v, env)
+	case *object.SymbolObject:
+		return eval_symbol(v, env)
 	default:
 		return nil, fmt.Errorf("Unsupported type. obj=%v, type=%T", obj, obj)
 	}
+}
+
+func eval_symbol(obj *object.SymbolObject, env *env.Env) (object.Object, error) {
+	o, ok := env.Get(obj.Value)
+	if !ok {
+		return nil, fmt.Errorf("eval_symbol: failed to Env#Get. obj=%v", obj)
+	}
+	return o, nil
+}
+
+func eval_define(obj *object.ListObject, env *env.Env) (object.Object, error) {
+	if len(obj.Value) == 0 {
+		return nil, fmt.Errorf("eval_define: ListObject length not 3. len=%d", len(obj.Value))
+	}
+
+	symbol, ok := (obj.Value[1]).(*object.SymbolObject)
+	if !ok {
+		return nil, fmt.Errorf("eval_define: obj.Value[1] not SymbolObject. type=%T, v=%v", obj.Value[1], obj.Value[1])
+	}
+
+	env.Set(symbol.Value, obj.Value[2])
+
+	return object.VoidObject{}, nil
 }
 
 func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
@@ -34,6 +59,8 @@ func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 			return eval_binary_op(obj, env)
 		case "*":
 			return eval_binary_op(obj, env)
+		case "define":
+			return eval_define(obj, env)
 		default:
 			return nil, fmt.Errorf("Unsupported operator type. head=%v", head)
 		}

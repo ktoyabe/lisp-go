@@ -15,7 +15,7 @@ func Extend(parent *Env) *Env {
 	return &Env{parent: parent, vars: make(map[string]object.Object)}
 }
 
-func (env *Env) get(name string) (object.Object, bool) {
+func (env *Env) Get(name string) (object.Object, bool) {
 	val, ok := env.vars[name]
 	if ok {
 		return val, true
@@ -23,9 +23,9 @@ func (env *Env) get(name string) (object.Object, bool) {
 	if env.parent == nil {
 		return nil, false
 	}
-	return env.parent.get(name)
+	return env.parent.Get(name)
 }
 
-func (env *Env) set(name string, value object.Object) {
+func (env *Env) Set(name string, value object.Object) {
 	env.vars[name] = value
 }

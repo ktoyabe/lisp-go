@@ -22,6 +22,16 @@ func eval(t *testing.T, input string, env *env.Env) (object.Object, error) {
 	return Eval(obj, env)
 }
 
+func testEvalObject(t *testing.T, input string, env *env.Env, want object.Object) {
+	got, err := eval(t, input, env)
+	if err != nil {
+		t.Errorf("eval has error. error=%v", err)
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("input: %s, diff=%v", input, diff)
+	}
+}
+
 func TestEvalBinaryOp(t *testing.T) {
 	env := env.New()
 
@@ -37,13 +47,23 @@ func TestEvalBinaryOp(t *testing.T) {
 	}
 
 	for i, tt := range inputs {
-		got, err := eval(t, tt, env)
-		if err != nil {
-			t.Errorf("eval has error. error=%v", err)
-		}
-		want := wants[i]
-		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("input: %s, diff=%v", tt, diff)
-		}
+		testEvalObject(t, tt, env, wants[i])
+	}
+}
+
+func TestEval(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(define abc 3)",
+		"(* 2 abc)",
+	}
+	wants := []object.Object{
+		object.VoidObject{},
+		&object.IntObject{Value: 6},
+	}
+
+	for i, tt := range inputs {
+		testEvalObject(t, tt, env, wants[i])
 	}
 }

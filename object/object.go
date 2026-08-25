@@ -6,6 +6,14 @@ type Object interface {
 	TokenLiteral() string
 }
 
+type VoidObject struct {
+	Object
+}
+
+func (o VoidObject) TokenLiteral() string {
+	return "Void"
+}
+
 type IntObject struct {
 	Object
 	Value int
