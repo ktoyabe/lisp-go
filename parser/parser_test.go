@@ -45,6 +45,16 @@ func testObject(t *testing.T, want object.Object, got object.Object) {
 	}
 }
 
+func TestParseSymbol(t *testing.T) {
+	input := "(define a 10)"
+	want := []object.Object{
+		&object.SymbolObject{Value: "define"},
+		&object.SymbolObject{Value: "a"},
+		&object.IntObject{Value: 10},
+	}
+	testParse(t, input, want)
+}
+
 func testListObject(t *testing.T, want *object.ListObject, got object.Object) {
 	got_list, ok := got.(*object.ListObject)
 	if !ok {
