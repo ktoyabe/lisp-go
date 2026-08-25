@@ -32,6 +32,8 @@ func (l *Lexer) NextToken() token.Token {
 	switch l.ch {
 	case '+':
 		tok = newToken(token.PLUS, l.ch)
+	case '*':
+		tok = newToken(token.MUL, l.ch)
 	case '(':
 		tok = newToken(token.LPAREN, l.ch)
 	case ')':
@@ -40,7 +42,11 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
-		if isDigit(l.ch) {
+		if isLetter(l.ch) {
+			tok.Literal = l.readSymbol()
+			tok.Type = token.LookupSymbol(tok.Literal)
+			return tok
+		} else if isDigit(l.ch) {
 			tok.Type = token.INT
 			tok.Literal = l.readNumber()
 			return tok
@@ -69,6 +75,18 @@ func (l *Lexer) readNumber() string {
 	return l.input[position:l.position]
 }
 
+func (l *Lexer) readSymbol() string {
+	position := l.position
+	for isLetter(l.ch) {
+		l.readChar()
+	}
+	return l.input[position:l.position]
+}
+
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
+}
+
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
 }

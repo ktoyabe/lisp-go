@@ -1,5 +1,9 @@
 package token
 
+var keywords = map[string]TokenType{
+	"define": DEFINE,
+}
+
 type TokenType string
 
 type Token struct {
@@ -13,8 +17,21 @@ const (
 	SYMBOL = "SYMBOL"
 	INT    = "INT"
 
+	// operators
 	PLUS = "+"
+	MUL  = "*"
 
 	LPAREN = "("
 	RPAREN = ")"
+
+	//keywords
+	DEFINE = "DEFINE"
 )
+
+func LookupSymbol(symbol string) TokenType {
+	if tok, ok := keywords[symbol]; ok {
+		return tok
+	}
+
+	return SYMBOL
+}

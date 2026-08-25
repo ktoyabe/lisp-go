@@ -7,7 +7,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestNextToken(t *testing.T) {
+func TestNextTokenINT(t *testing.T) {
 	input := `
 	(+ 5 10)
 	`
@@ -30,4 +30,32 @@ func TestNextToken(t *testing.T) {
 		}
 	}
 
+}
+
+func TestNextTokenSYMBOL(t *testing.T) {
+	input := `
+	(define mul (* x y))
+	`
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.DEFINE, Literal: "define"},
+		{Type: token.SYMBOL, Literal: "mul"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.MUL, Literal: "*"},
+		{Type: token.SYMBOL, Literal: "x"},
+		{Type: token.SYMBOL, Literal: "y"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	l := New(input)
+
+	for _, tt := range tests {
+		tok := l.NextToken()
+
+		if diff := cmp.Diff(tok, tt); diff != "" {
+			t.Errorf("actual: %v, expected: %v", tok, tt)
+		}
+	}
 }
