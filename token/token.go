@@ -26,6 +26,9 @@ const (
 	LESS    = "<"
 	GREATER = ">"
 	EQ      = "="
+	NOT_EQ  = "!="
+
+	NE = "!"
 
 	LPAREN = "("
 	RPAREN = ")"

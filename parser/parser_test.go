@@ -38,6 +38,16 @@ func TestParseEQ(t *testing.T) {
 	testParse(t, input, want)
 }
 
+func TestParseNotEQ(t *testing.T) {
+	input := "(!= 5 10)"
+	want := []object.Object{
+		&object.SymbolObject{Value: "!="},
+		&object.IntObject{Value: 5},
+		&object.IntObject{Value: 10},
+	}
+	testParse(t, input, want)
+}
+
 func TestParseRecursive(t *testing.T) {
 	input := `
 	(+ 5 (* 2 3))
