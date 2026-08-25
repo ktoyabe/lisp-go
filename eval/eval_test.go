@@ -67,3 +67,20 @@ func TestEval(t *testing.T) {
 		testEvalObject(t, tt, env, wants[i])
 	}
 }
+
+func TestEvalIf(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(if #t 1 2)",
+		"(if #f #f #t)",
+	}
+	wants := []object.Object{
+		&object.IntObject{Value: 1},
+		&object.BoolObject{Value: true},
+	}
+
+	for i, tt := range inputs {
+		testEvalObject(t, tt, env, wants[i])
+	}
+}

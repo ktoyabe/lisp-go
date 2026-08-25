@@ -32,6 +32,19 @@ func (o *SymbolObject) TokenLiteral() string {
 	return o.Value
 }
 
+type BoolObject struct {
+	Object
+	Value bool
+}
+
+func (o *BoolObject) TokenLiteral() string {
+	if o.Value {
+		return "#t"
+	} else {
+		return "#f"
+	}
+}
+
 type ListObject struct {
 	Object
 	Value []Object

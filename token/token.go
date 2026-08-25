@@ -2,6 +2,9 @@ package token
 
 var keywords = map[string]TokenType{
 	"define": DEFINE,
+	"if":     IF,
+	"#t":     TRUE,
+	"#f":     FALSE,
 }
 
 type TokenType string
@@ -25,7 +28,10 @@ const (
 	RPAREN = ")"
 
 	//keywords
+	TRUE   = "#t"
+	FALSE  = "#f"
 	DEFINE = "DEFINE"
+	IF     = "IF"
 )
 
 func LookupSymbol(symbol string) TokenType {

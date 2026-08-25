@@ -1,6 +1,8 @@
 package lexer
 
-import "lisp-go/token"
+import (
+	"lisp-go/token"
+)
 
 type Lexer struct {
 	input       string
@@ -38,6 +40,10 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.LPAREN, l.ch)
 	case ')':
 		tok = newToken(token.RPAREN, l.ch)
+	case '#':
+		tok.Literal = l.readBool()
+		tok.Type = token.LookupSymbol(tok.Literal)
+		return tok
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -80,6 +86,13 @@ func (l *Lexer) readSymbol() string {
 	for isLetter(l.ch) {
 		l.readChar()
 	}
+	return l.input[position:l.position]
+}
+
+func (l *Lexer) readBool() string {
+	position := l.position
+	l.readChar() // read #
+	l.readChar() // expected t or f
 	return l.input[position:l.position]
 }
 

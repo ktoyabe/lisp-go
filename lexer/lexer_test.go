@@ -54,3 +54,19 @@ func TestNextTokenSYMBOL(t *testing.T) {
 
 	testLexer(t, input, tests)
 }
+
+func TestNextTokenIf(t *testing.T) {
+	input := "(if #t #f #t)"
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.IF, Literal: "if"},
+		{Type: token.TRUE, Literal: "#t"},
+		{Type: token.FALSE, Literal: "#f"},
+		{Type: token.TRUE, Literal: "#t"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	testLexer(t, input, tests)
+}

@@ -55,6 +55,17 @@ func TestParseSymbol(t *testing.T) {
 	testParse(t, input, want)
 }
 
+func TestParseIf(t *testing.T) {
+	input := "(if #t 3 1)"
+	want := []object.Object{
+		&object.SymbolObject{Value: "if"},
+		&object.BoolObject{Value: true},
+		&object.IntObject{Value: 3},
+		&object.IntObject{Value: 1},
+	}
+	testParse(t, input, want)
+}
+
 func testListObject(t *testing.T, want *object.ListObject, got object.Object) {
 	got_list, ok := got.(*object.ListObject)
 	if !ok {

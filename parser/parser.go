@@ -49,6 +49,12 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 		}
 
 		switch tok.Type {
+		case token.TRUE:
+			o := &object.BoolObject{Value: true}
+			list = append(list, o)
+		case token.FALSE:
+			o := &object.BoolObject{Value: false}
+			list = append(list, o)
 		case token.PLUS:
 			o := &object.SymbolObject{Value: tok.Literal}
 			list = append(list, o)
