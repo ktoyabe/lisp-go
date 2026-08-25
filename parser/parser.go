@@ -34,7 +34,6 @@ func (p *Parser) Parse() (*object.ListObject, error) {
 		return nil, fmt.Errorf("expected LParent. found %v", tok)
 	}
 
-	p.NextToken()
 	return p.parseList()
 }
 
@@ -42,6 +41,8 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 	var list []object.Object
 
 	for {
+		p.NextToken() // consume LParent
+
 		tok := p.curToken
 		if tok.Type == token.EOF {
 			return nil, fmt.Errorf("insufficient token.")
@@ -51,6 +52,9 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 		case token.PLUS:
 			o := &object.SymbolObject{Value: tok.Literal}
 			list = append(list, o)
+		case token.MUL:
+			o := &object.SymbolObject{Value: tok.Literal}
+			list = append(list, o)
 		case token.INT:
 			i, err := strconv.Atoi(tok.Literal)
 			if err != nil {
@@ -58,13 +62,18 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 			}
 			o := &object.IntObject{Value: i}
 			list = append(list, o)
+		case token.LPAREN:
+			subList, err := p.parseList()
+			if err != nil {
+				return nil, err
+			}
+			list = append(list, subList)
 		case token.RPAREN:
-			p.NextToken()
+
 			return &object.ListObject{Value: list}, nil
 		default:
 			return nil, fmt.Errorf("Unsupported token. type=%v, literal=%v", tok.Type, tok.Literal)
 		}
-		p.NextToken()
 	}
 
 }
