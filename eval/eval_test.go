@@ -61,6 +61,26 @@ func TestEval(t *testing.T) {
 	wants := []object.Object{
 		object.VoidObject{},
 		&object.IntObject{Value: 6},
+		&object.BoolObject{Value: true},
+	}
+
+	for i, tt := range inputs {
+		testEvalObject(t, tt, env, wants[i])
+	}
+}
+
+func TestEvalComparison(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(< 2 1)",
+		"(< 2 2)",
+		"(< 2 3)",
+	}
+	wants := []object.Object{
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: true},
 	}
 
 	for i, tt := range inputs {
@@ -72,11 +92,11 @@ func TestEvalIf(t *testing.T) {
 	env := env.New()
 
 	inputs := []string{
-		"(if #t 1 2)",
+		"(if (< 1 2) 3 4)",
 		"(if #f #f #t)",
 	}
 	wants := []object.Object{
-		&object.IntObject{Value: 1},
+		&object.IntObject{Value: 3},
 		&object.BoolObject{Value: true},
 	}
 

@@ -61,12 +61,16 @@ func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 			return eval_binary_op(obj, env)
 		case "*":
 			return eval_binary_op(obj, env)
+		case "<":
+			return eval_binary_op(obj, env)
+		case ">":
+			return eval_binary_op(obj, env)
 		case "define":
 			return eval_define(obj, env)
 		case "if":
 			return eval_if(obj, env)
 		default:
-			return nil, fmt.Errorf("Unsupported operator type. head=%v", head)
+			return nil, fmt.Errorf("eval_list: Unsupported operator type. head=%v", head)
 		}
 	default:
 		return nil, fmt.Errorf("Unsupported type. head=%v, type=%T", head, head)
@@ -104,6 +108,10 @@ func eval_binary_op(obj *object.ListObject, env *env.Env) (object.Object, error)
 		return &object.IntObject{Value: lhs_int.Value + rhs_int.Value}, nil
 	case "*":
 		return &object.IntObject{Value: lhs_int.Value * rhs_int.Value}, nil
+	case "<":
+		return &object.BoolObject{Value: lhs_int.Value < rhs_int.Value}, nil
+	case ">":
+		return &object.BoolObject{Value: lhs_int.Value > rhs_int.Value}, nil
 	default:
 		return nil, fmt.Errorf("eval_binary_op unsuppoted operator. op=%v", op)
 	}

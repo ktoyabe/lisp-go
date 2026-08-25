@@ -21,8 +21,10 @@ const (
 	INT    = "INT"
 
 	// operators
-	PLUS = "+"
-	MUL  = "*"
+	PLUS    = "+"
+	MUL     = "*"
+	LESS    = "<"
+	GREATER = ">"
 
 	LPAREN = "("
 	RPAREN = ")"

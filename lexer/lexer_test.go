@@ -70,3 +70,18 @@ func TestNextTokenIf(t *testing.T) {
 
 	testLexer(t, input, tests)
 }
+
+func TestNextTokenLess(t *testing.T) {
+	input := "(< 3 1)"
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.LESS, Literal: "<"},
+		{Type: token.INT, Literal: "3"},
+		{Type: token.INT, Literal: "1"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	testLexer(t, input, tests)
+}
