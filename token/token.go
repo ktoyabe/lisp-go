@@ -25,6 +25,7 @@ const (
 	MUL     = "*"
 	LESS    = "<"
 	GREATER = ">"
+	EQ      = "="
 
 	LPAREN = "("
 	RPAREN = ")"
