@@ -9,35 +9,56 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	input := `
-	(+ 5 10)
-	`
-	l := lexer.New(input)
-	p := New(l)
-
-	actual, err := p.Parse()
-	if err != nil {
-		t.Errorf("parse failed. error=%s", err)
-	}
-
-	expected := []object.Object{
+	input := "(+ 5 10)"
+	want := []object.Object{
 		&object.SymbolObject{Value: "+"},
 		&object.IntObject{Value: 5},
 		&object.IntObject{Value: 10},
 	}
-
-	for i, tt := range expected {
-		want := actual.Value[i]
-		if diff := cmp.Diff(want, tt); diff != "" {
-			t.Errorf("%v, actual: %v, expected: %v", i, want, tt)
-		}
-	}
+	testParse(t, input, want)
 }
 
 func TestParseRecursive(t *testing.T) {
 	input := `
 	(+ 5 (* 2 3))
 	`
+	want := []object.Object{
+		&object.SymbolObject{Value: "+"},
+		&object.IntObject{Value: 5},
+		&object.ListObject{Value: []object.Object{
+			&object.SymbolObject{Value: "*"},
+			&object.IntObject{Value: 2},
+			&object.IntObject{Value: 3},
+		}},
+	}
+	testParse(t, input, want)
+}
+
+func testObject(t *testing.T, want object.Object, got object.Object) {
+	switch w := want.(type) {
+	case *object.ListObject:
+		testListObject(t, w, got)
+	default:
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
+
+func testListObject(t *testing.T, want *object.ListObject, got object.Object) {
+	got_list, ok := got.(*object.ListObject)
+	if !ok {
+		t.Errorf("got not *object.ListObject. got=%T", got)
+	}
+	for i, o := range want.Value {
+		if diff := cmp.Diff(got_list.Value[i], o); diff != "" {
+			t.Errorf("[%v] want: %v, got=%v", i, o, got_list.Value[i])
+		}
+	}
+
+}
+
+func testParse(t *testing.T, input string, want []object.Object) {
 	l := lexer.New(input)
 	p := New(l)
 
@@ -46,39 +67,7 @@ func TestParseRecursive(t *testing.T) {
 		t.Errorf("parse failed. error=%s", err)
 	}
 
-	want := &object.ListObject{
-		Value: []object.Object{
-			&object.SymbolObject{Value: "+"},
-			&object.IntObject{Value: 5},
-			&object.ListObject{Value: []object.Object{
-				&object.SymbolObject{Value: "*"},
-				&object.IntObject{Value: 2},
-				&object.IntObject{Value: 3},
-			}},
-		},
-	}
-
-	for i, tt := range want.Value {
+	for i, tt := range want {
 		testObject(t, tt, got.Value[i])
 	}
-}
-
-func testObject(t *testing.T, want object.Object, got object.Object) {
-	want_list, ok := want.(*object.ListObject)
-	if ok { // expected is list
-		got_list, ok := got.(*object.ListObject)
-		if !ok {
-			t.Errorf("got not *object.ListObject. got=%T", got)
-		}
-		for i, want_obj := range want_list.Value {
-			if diff := cmp.Diff(got_list.Value[i], want_obj); diff != "" {
-				t.Errorf("[%v] want: %v, got=%v", i, want_obj, got_list.Value[i])
-			}
-		}
-	} else { // expected is not list
-		if diff := cmp.Diff(want, got); diff != "" {
-			t.Errorf("want: %v, got=%v", want, got)
-		}
-	}
-
 }
