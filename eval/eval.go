@@ -7,25 +7,25 @@ import (
 )
 
 func Eval(obj object.Object, env *env.Env) (object.Object, error) {
-	return eval_obj(obj, env)
+	return evalObj(obj, env)
 }
 
-func eval_obj(obj object.Object, env *env.Env) (object.Object, error) {
+func evalObj(obj object.Object, env *env.Env) (object.Object, error) {
 	switch v := obj.(type) {
 	case *object.IntObject:
 		return v, nil
 	case *object.BoolObject:
 		return v, nil
 	case *object.ListObject:
-		return eval_list(v, env)
+		return evalList(v, env)
 	case *object.SymbolObject:
-		return eval_symbol(v, env)
+		return evalSymbol(v, env)
 	default:
 		return nil, fmt.Errorf("Unsupported type. obj=%v, type=%T", obj, obj)
 	}
 }
 
-func eval_symbol(obj *object.SymbolObject, env *env.Env) (object.Object, error) {
+func evalSymbol(obj *object.SymbolObject, env *env.Env) (object.Object, error) {
 	o, ok := env.Get(obj.Value)
 	if !ok {
 		return nil, fmt.Errorf("eval_symbol: Unknown symbol name. name=\"%v\"", obj.Value)
@@ -33,7 +33,7 @@ func eval_symbol(obj *object.SymbolObject, env *env.Env) (object.Object, error) 
 	return o, nil
 }
 
-func eval_define(obj *object.ListObject, env *env.Env) (object.Object, error) {
+func evalDefine(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	if len(obj.Value) == 0 {
 		return nil, fmt.Errorf("eval_define: ListObject length not 3. len=%d", len(obj.Value))
 	}
@@ -48,24 +48,24 @@ func eval_define(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	return object.VoidObject{}, nil
 }
 
-func eval_function_call(lambda *object.LambdaObject, args []object.Object, environment *env.Env) (object.Object, error) {
+func evalFunctionCall(lambda *object.LambdaObject, args []object.Object, environment *env.Env) (object.Object, error) {
 	if len(lambda.Params) != len(args) {
 		return nil, fmt.Errorf("eval_function_call: Params length error. len(Lambda#Params)=%d, actual=%d", len(lambda.Params), len(args))
 	}
 
 	functionScopeEnv := env.Extend(environment)
 	for i, p := range lambda.Params {
-		v, err := eval_obj(args[i], environment)
+		v, err := evalObj(args[i], environment)
 		if err != nil {
 			return nil, err
 		}
 		functionScopeEnv.Set(p, v)
 	}
 
-	return eval_list(lambda.Body, functionScopeEnv)
+	return evalList(lambda.Body, functionScopeEnv)
 }
 
-func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
+func evalList(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	if len(obj.Value) == 0 {
 		return nil, fmt.Errorf("ListObject length not zero.")
 	}
@@ -77,21 +77,21 @@ func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 		if len(obj.Value) != 3 { // (operator lhs rhs)
 			return nil, fmt.Errorf("eval_list: operator object require 3 elements. got=%d", len(obj.Value))
 		}
-		return eval_binary_op(v, obj.Value[1], obj.Value[2], env)
+		return evalBinaryOp(v, obj.Value[1], obj.Value[2], env)
 	case *object.SymbolObject:
 		switch v.Value {
 		case "define":
-			return eval_define(obj, env)
+			return evalDefine(obj, env)
 		case "if":
-			return eval_if(obj, env)
+			return evalIf(obj, env)
 		default:
-			v, err := eval_symbol(v, env)
+			v, err := evalSymbol(v, env)
 			if err != nil {
 				return nil, err
 			}
 			switch vv := v.(type) {
 			case *object.LambdaObject:
-				return eval_function_call(vv, obj.Value[1:], env)
+				return evalFunctionCall(vv, obj.Value[1:], env)
 			default:
 				return nil, fmt.Errorf("eval_list: Unsupported operator type. head=%v", head)
 			}
@@ -101,14 +101,14 @@ func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	}
 }
 
-func eval_binary_op(op *object.OperatorObject, lhs object.Object, rhs object.Object, env *env.Env) (object.Object, error) {
-	lhs_obj, err := eval_obj(lhs, env)
+func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Object, env *env.Env) (object.Object, error) {
+	lhs_obj, err := evalObj(lhs, env)
 	if err != nil {
 		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(lhs). error=%v", err)
 	}
 	lhs_int, lhs_ok := lhs_obj.(*object.IntObject)
 
-	rhs_obj, err := eval_obj(rhs, env)
+	rhs_obj, err := evalObj(rhs, env)
 	if err != nil {
 		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(rhs). error=%v", err)
 	}
@@ -138,11 +138,11 @@ func eval_binary_op(op *object.OperatorObject, lhs object.Object, rhs object.Obj
 	}
 }
 
-func eval_if(obj *object.ListObject, env *env.Env) (object.Object, error) {
+func evalIf(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	if len(obj.Value) != 4 {
 		return nil, fmt.Errorf("eval_if: size must be 4. length=%d", len(obj.Value))
 	}
-	cond, err := eval_obj(obj.Value[1], env)
+	cond, err := evalObj(obj.Value[1], env)
 	if err != nil {
 		return nil, fmt.Errorf("eval_if: failed to eval_obj(cond_cell). error=%v", err)
 	}
@@ -151,8 +151,8 @@ func eval_if(obj *object.ListObject, env *env.Env) (object.Object, error) {
 		return nil, fmt.Errorf("eval_if: eval_obj(cond) not BoolObject. cond=%v, type=%v", cond, cond)
 	}
 	if result.Value {
-		return eval_obj(obj.Value[2], env)
+		return evalObj(obj.Value[2], env)
 	} else {
-		return eval_obj(obj.Value[3], env)
+		return evalObj(obj.Value[3], env)
 	}
 }
