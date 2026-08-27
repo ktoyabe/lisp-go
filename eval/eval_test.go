@@ -162,3 +162,29 @@ func TestEvalLambda(t *testing.T) {
 		testEvalObject(t, input, env, wants[i])
 	}
 }
+
+func TestEvalFib(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(define fib (lambda (n) (if (< n 2) 1 (+ (fib (- n 1)) (fib (- n 2))))))",
+		"(fib 1)",
+		"(fib 2)",
+		"(fib 3)",
+		"(fib 4)",
+		"(fib 5)",
+	}
+
+	wants := []object.Object{
+		object.VoidObject{},
+		&object.IntObject{Value: 1},
+		&object.IntObject{Value: 2},
+		&object.IntObject{Value: 3},
+		&object.IntObject{Value: 5},
+		&object.IntObject{Value: 8},
+	}
+
+	for i, input := range inputs {
+		testEvalObject(t, input, env, wants[i])
+	}
+}
