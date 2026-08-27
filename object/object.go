@@ -9,7 +9,6 @@ type Object interface {
 }
 
 type VoidObject struct {
-	Object
 }
 
 func (o VoidObject) TokenLiteral() string {
@@ -17,7 +16,6 @@ func (o VoidObject) TokenLiteral() string {
 }
 
 type IntObject struct {
-	Object
 	Value int
 }
 
@@ -26,7 +24,6 @@ func (o *IntObject) TokenLiteral() string {
 }
 
 type SymbolObject struct {
-	Object
 	Value string
 }
 
@@ -35,7 +32,6 @@ func (o *SymbolObject) TokenLiteral() string {
 }
 
 type OperatorObject struct {
-	Object
 	Value string
 }
 
@@ -44,7 +40,6 @@ func (o *OperatorObject) TokenLiteral() string {
 }
 
 type BoolObject struct {
-	Object
 	Value bool
 }
 
@@ -57,7 +52,6 @@ func (o *BoolObject) TokenLiteral() string {
 }
 
 type ListObject struct {
-	Object
 	Value []Object
 }
 
@@ -66,7 +60,6 @@ func (o *ListObject) TokenLiteral() string {
 }
 
 type LambdaObject struct {
-	Object
 	Params []string
 	Body   *ListObject
 }

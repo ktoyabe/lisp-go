@@ -28,7 +28,7 @@ func eval_obj(obj object.Object, env *env.Env) (object.Object, error) {
 func eval_symbol(obj *object.SymbolObject, env *env.Env) (object.Object, error) {
 	o, ok := env.Get(obj.Value)
 	if !ok {
-		return nil, fmt.Errorf("eval_symbol: failed to Env#Get. obj=%v", obj)
+		return nil, fmt.Errorf("eval_symbol: Unknown symbol name. name=\"%v\"", obj.Value)
 	}
 	return o, nil
 }
@@ -121,13 +121,13 @@ func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 func eval_binary_op(op *object.OperatorObject, lhs object.Object, rhs object.Object, env *env.Env) (object.Object, error) {
 	lhs_obj, err := eval_obj(lhs, env)
 	if err != nil {
-		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(obj.Value[1]). error=%v", err)
+		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(lhs). error=%v", err)
 	}
 	lhs_int, lhs_ok := lhs_obj.(*object.IntObject)
 
 	rhs_obj, err := eval_obj(rhs, env)
 	if err != nil {
-		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(obj.Value[2]). error=%v", err)
+		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(rhs). error=%v", err)
 	}
 	rhs_int, rhs_ok := rhs_obj.(*object.IntObject)
 
