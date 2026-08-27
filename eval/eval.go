@@ -62,7 +62,7 @@ func eval_function_call(lambda *object.LambdaObject, args []object.Object, envir
 		functionScopeEnv.Set(p, v)
 	}
 
-	return eval_list(&object.ListObject{Value: lambda.Body}, functionScopeEnv)
+	return eval_list(lambda.Body, functionScopeEnv)
 }
 
 func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {

@@ -59,7 +59,7 @@ func (o *ListObject) TokenLiteral() string {
 type LambdaObject struct {
 	Object
 	Params []string
-	Body   []Object
+	Body   *ListObject
 }
 
 func (o *LambdaObject) TokenLiteral() string {

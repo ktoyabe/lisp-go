@@ -80,7 +80,7 @@ func (p *Parser) parseLambda() (*object.LambdaObject, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &object.LambdaObject{Params: params, Body: body.Value}, nil
+	return &object.LambdaObject{Params: params, Body: body}, nil
 }
 
 func (p *Parser) parseList() (*object.ListObject, error) {

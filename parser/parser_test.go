@@ -126,12 +126,12 @@ func testLambdaObject(t *testing.T, want *object.LambdaObject, got object.Object
 		}
 	}
 
-	if len(want.Body) != len(lambda.Body) {
-		t.Errorf("LambdaObject#Body len different. want=%d, got=%d", len(want.Body), len(lambda.Body))
+	if len(want.Body.Value) != len(lambda.Body.Value) {
+		t.Errorf("LambdaObject#Body len different. want=%d, got=%d", len(want.Body.Value), len(lambda.Body.Value))
 	}
-	for i, _ := range want.Body {
-		if diff := cmp.Diff(lambda.Body[i], want.Body[i]); diff != "" {
-			t.Errorf("[%d] want: %v, got=%v", i, want.Body[i], lambda.Body[i])
+	for i, _ := range want.Body.Value {
+		if diff := cmp.Diff(lambda.Body.Value[i], want.Body.Value[i]); diff != "" {
+			t.Errorf("[%d] want: %v, got=%v", i, want.Body.Value[i], lambda.Body.Value[i])
 		}
 	}
 }
@@ -155,11 +155,15 @@ func TestParseLambda(t *testing.T) {
 	want := []object.Object{
 		&object.SymbolObject{Value: "define"},
 		&object.SymbolObject{Value: "add"},
-		&object.LambdaObject{Params: []string{"x", "y"}, Body: []object.Object{
-			&object.SymbolObject{Value: "+"},
-			&object.SymbolObject{Value: "x"},
-			&object.SymbolObject{Value: "y"},
-		}},
+		&object.LambdaObject{
+			Params: []string{"x", "y"},
+			Body: &object.ListObject{Value: []object.Object{
+				&object.SymbolObject{Value: "+"},
+				&object.SymbolObject{Value: "x"},
+				&object.SymbolObject{Value: "y"},
+			}},
+		},
 	}
+
 	testParse(t, input, want)
 }
