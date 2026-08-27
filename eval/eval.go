@@ -48,12 +48,30 @@ func eval_define(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	return object.VoidObject{}, nil
 }
 
+func eval_function_call(lambda *object.LambdaObject, args []object.Object, environment *env.Env) (object.Object, error) {
+	if len(lambda.Params) != len(args) {
+		return nil, fmt.Errorf("eval_function_call: Params length error. len(Lambda#Params)=%d, actual=%d", len(lambda.Params), len(args))
+	}
+
+	functionScopeEnv := env.Extend(environment)
+	for i, p := range lambda.Params {
+		v, err := eval_obj(args[i], environment)
+		if err != nil {
+			return nil, err
+		}
+		functionScopeEnv.Set(p, v)
+	}
+
+	return eval_list(&object.ListObject{Value: lambda.Body}, functionScopeEnv)
+}
+
 func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	if len(obj.Value) == 0 {
 		return nil, fmt.Errorf("ListObject length not zero.")
 	}
 
 	head := obj.Value[0]
+
 	switch v := head.(type) {
 	case *object.SymbolObject:
 		switch v.Value {
@@ -74,7 +92,16 @@ func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 		case "if":
 			return eval_if(obj, env)
 		default:
-			return nil, fmt.Errorf("eval_list: Unsupported operator type. head=%v", head)
+			v, err := eval_symbol(v, env)
+			if err != nil {
+				return nil, err
+			}
+			switch vv := v.(type) {
+			case *object.LambdaObject:
+				return eval_function_call(vv, obj.Value[1:], env)
+			default:
+				return nil, fmt.Errorf("eval_list: Unsupported operator type. head=%v", head)
+			}
 		}
 	default:
 		return nil, fmt.Errorf("Unsupported type. head=%v, type=%T", head, head)

@@ -3,6 +3,7 @@ package token
 var keywords = map[string]TokenType{
 	"define": DEFINE,
 	"if":     IF,
+	"lambda": LAMBDA,
 	"#t":     TRUE,
 	"#f":     FALSE,
 }
@@ -38,6 +39,7 @@ const (
 	FALSE  = "#f"
 	DEFINE = "DEFINE"
 	IF     = "IF"
+	LAMBDA = "lambda"
 )
 
 func LookupSymbol(symbol string) TokenType {

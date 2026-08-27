@@ -1,6 +1,8 @@
 package object
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type Object interface {
 	TokenLiteral() string
@@ -52,4 +54,14 @@ type ListObject struct {
 
 func (o *ListObject) TokenLiteral() string {
 	return "List"
+}
+
+type LambdaObject struct {
+	Object
+	Params []string
+	Body   []Object
+}
+
+func (o *LambdaObject) TokenLiteral() string {
+	return "Lambda"
 }

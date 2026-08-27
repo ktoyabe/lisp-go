@@ -142,3 +142,21 @@ func TestEvalIf(t *testing.T) {
 		testEvalObject(t, tt, env, wants[i])
 	}
 }
+
+func TestEvalLambda(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(define add (lambda (x y) (+ x y)))",
+		"(add 2 3)",
+	}
+
+	wants := []object.Object{
+		object.VoidObject{},
+		&object.IntObject{Value: 5},
+	}
+
+	for i, input := range inputs {
+		testEvalObject(t, input, env, wants[i])
+	}
+}

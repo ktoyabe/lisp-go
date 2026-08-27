@@ -68,6 +68,8 @@ func testObject(t *testing.T, want object.Object, got object.Object) {
 	switch w := want.(type) {
 	case *object.ListObject:
 		testListObject(t, w, got)
+	case *object.LambdaObject:
+		testLambdaObject(t, w, got)
 	default:
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Error(diff)
@@ -109,6 +111,31 @@ func testListObject(t *testing.T, want *object.ListObject, got object.Object) {
 
 }
 
+func testLambdaObject(t *testing.T, want *object.LambdaObject, got object.Object) {
+	lambda, ok := got.(*object.LambdaObject)
+	if !ok {
+		t.Errorf("got not *object.LambdaObject. got=%T", got)
+	}
+
+	if len(want.Params) != len(lambda.Params) {
+		t.Errorf("LambdaObject#Params len different. want=%d, got=%d", len(want.Params), len(lambda.Params))
+	}
+	for i, _ := range want.Params {
+		if diff := cmp.Diff(lambda.Params[i], want.Params[i]); diff != "" {
+			t.Errorf("Params[%d] want=%v, got=%v", i, want.Params[i], lambda.Params[i])
+		}
+	}
+
+	if len(want.Body) != len(lambda.Body) {
+		t.Errorf("LambdaObject#Body len different. want=%d, got=%d", len(want.Body), len(lambda.Body))
+	}
+	for i, _ := range want.Body {
+		if diff := cmp.Diff(lambda.Body[i], want.Body[i]); diff != "" {
+			t.Errorf("[%d] want: %v, got=%v", i, want.Body[i], lambda.Body[i])
+		}
+	}
+}
+
 func testParse(t *testing.T, input string, want []object.Object) {
 	l := lexer.New(input)
 	p := New(l)
@@ -121,4 +148,18 @@ func testParse(t *testing.T, input string, want []object.Object) {
 	for i, tt := range want {
 		testObject(t, tt, got.Value[i])
 	}
+}
+
+func TestParseLambda(t *testing.T) {
+	input := "(define add (lambda (x y) (+ x y)))"
+	want := []object.Object{
+		&object.SymbolObject{Value: "define"},
+		&object.SymbolObject{Value: "add"},
+		&object.LambdaObject{Params: []string{"x", "y"}, Body: []object.Object{
+			&object.SymbolObject{Value: "+"},
+			&object.SymbolObject{Value: "x"},
+			&object.SymbolObject{Value: "y"},
+		}},
+	}
+	testParse(t, input, want)
 }

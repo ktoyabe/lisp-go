@@ -115,3 +115,25 @@ func TestNextTokenNotEq(t *testing.T) {
 
 	testLexer(t, input, tests)
 }
+
+func TestNextTokenLambda(t *testing.T) {
+	input := "(lambda (x y) (+ x y))"
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.LAMBDA, Literal: "lambda"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.SYMBOL, Literal: "x"},
+		{Type: token.SYMBOL, Literal: "y"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.PLUS, Literal: "+"},
+		{Type: token.SYMBOL, Literal: "x"},
+		{Type: token.SYMBOL, Literal: "y"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	testLexer(t, input, tests)
+}
