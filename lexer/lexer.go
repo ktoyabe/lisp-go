@@ -42,6 +42,16 @@ func (l *Lexer) NextToken() token.Token {
 	switch l.ch {
 	case '+':
 		tok = newToken(token.PLUS, l.ch)
+	case '-':
+		peek := l.peekChar()
+		if !isDigit(peek) {
+			tok = newToken(token.MINUS, l.ch)
+		} else {
+			l.readChar() // consume "-"
+			tok.Type = token.INT
+			tok.Literal = "-" + l.readNumber()
+			return tok
+		}
 	case '*':
 		tok = newToken(token.MUL, l.ch)
 	case '<':

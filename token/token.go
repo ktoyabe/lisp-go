@@ -23,6 +23,7 @@ const (
 
 	// operators
 	PLUS    = "+"
+	MINUS   = "-"
 	MUL     = "*"
 	LESS    = "<"
 	GREATER = ">"

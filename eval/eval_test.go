@@ -39,11 +39,13 @@ func TestEvalBinaryOp(t *testing.T) {
 		"(+ 5 10)",
 		"(* 2 3)",
 		"(+ (+ 2 3) (+ 1 2))",
+		"(- -5 10)",
 	}
 	wants := []object.Object{
 		&object.IntObject{Value: 15},
 		&object.IntObject{Value: 6},
 		&object.IntObject{Value: 8},
+		&object.IntObject{Value: -15},
 	}
 
 	for i, tt := range inputs {

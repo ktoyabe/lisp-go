@@ -82,6 +82,8 @@ func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 		switch v.Value {
 		case "+":
 			return eval_binary_op(v, lhs, rhs, env)
+		case "-":
+			return eval_binary_op(v, lhs, rhs, env)
 		case "*":
 			return eval_binary_op(v, lhs, rhs, env)
 		case "<":
@@ -138,6 +140,8 @@ func eval_binary_op(op *object.OperatorObject, lhs object.Object, rhs object.Obj
 	switch op.Value {
 	case "+":
 		return &object.IntObject{Value: lhs_int.Value + rhs_int.Value}, nil
+	case "-":
+		return &object.IntObject{Value: lhs_int.Value - rhs_int.Value}, nil
 	case "*":
 		return &object.IntObject{Value: lhs_int.Value * rhs_int.Value}, nil
 	case "<":

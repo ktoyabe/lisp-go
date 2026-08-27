@@ -35,6 +35,22 @@ func TestNextTokenINT(t *testing.T) {
 	testLexer(t, input, tests)
 }
 
+func TestNextTokenMinus(t *testing.T) {
+	input := `
+	(- -5 10)
+	`
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.MINUS, Literal: "-"},
+		{Type: token.INT, Literal: "-5"},
+		{Type: token.INT, Literal: "10"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	testLexer(t, input, tests)
+}
+
 func TestNextTokenSYMBOL(t *testing.T) {
 	input := `
 	(define mul (* x y))

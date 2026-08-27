@@ -104,6 +104,9 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 		case token.PLUS:
 			o := &object.OperatorObject{Value: tok.Literal}
 			list = append(list, o)
+		case token.MINUS:
+			o := &object.OperatorObject{Value: tok.Literal}
+			list = append(list, o)
 		case token.MUL:
 			o := &object.OperatorObject{Value: tok.Literal}
 			list = append(list, o)
