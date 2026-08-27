@@ -29,15 +29,15 @@ func Start(in io.Reader, out io.Writer) {
 
 		objs, err := p.Parse()
 		if err != nil {
-			fmt.Printf("Parse error: %v\n", err)
+			fmt.Fprintf(out, "Parse error: %v\n", err)
 			continue
 		}
 
 		result, err := eval.Eval(objs, environment)
 		if err != nil {
-			fmt.Printf("Eval error: %v\n", err)
+			fmt.Fprintf(out, "Eval error: %v\n", err)
 			continue
 		}
-		fmt.Printf("[%T] %+v\n", result, result)
+		fmt.Fprintf(out, "[%T] %+v\n", result, result)
 	}
 }
