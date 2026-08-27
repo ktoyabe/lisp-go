@@ -77,26 +77,7 @@ func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 		if len(obj.Value) != 3 { // (operator lhs rhs)
 			return nil, fmt.Errorf("eval_list: operator object require 3 elements. got=%d", len(obj.Value))
 		}
-		lhs := obj.Value[1]
-		rhs := obj.Value[2]
-		switch v.Value {
-		case "+":
-			return eval_binary_op(v, lhs, rhs, env)
-		case "-":
-			return eval_binary_op(v, lhs, rhs, env)
-		case "*":
-			return eval_binary_op(v, lhs, rhs, env)
-		case "<":
-			return eval_binary_op(v, lhs, rhs, env)
-		case ">":
-			return eval_binary_op(v, lhs, rhs, env)
-		case "=":
-			return eval_binary_op(v, lhs, rhs, env)
-		case "!=":
-			return eval_binary_op(v, lhs, rhs, env)
-		default:
-			return nil, fmt.Errorf("eval_list: unsupported operator type. operator=%v", v)
-		}
+		return eval_binary_op(v, obj.Value[1], obj.Value[2], env)
 	case *object.SymbolObject:
 		switch v.Value {
 		case "define":
