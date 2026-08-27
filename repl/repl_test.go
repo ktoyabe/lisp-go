@@ -2,7 +2,6 @@ package repl
 
 import (
 	"bytes"
-	"fmt"
 	"lisp-go/object"
 	"strings"
 	"testing"
@@ -10,16 +9,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func toString(obj object.Object) string {
-	return fmt.Sprintf("[%T] %+v", obj, obj)
-}
-
 func TestRepl(t *testing.T) {
 	gots := executeRepl(t, []string{
 		"(+ 1 2)",
 	})
 	wants := []string{
-		toString(&object.IntObject{Value: 3}),
+		(&object.IntObject{Value: 3}).ToString(),
 		"",
 	}
 	if diff := cmp.Diff(wants, gots); diff != "" {
@@ -33,8 +28,8 @@ func TestReplUsingDefine(t *testing.T) {
 		"(+ 1 a)",
 	})
 	wants := []string{
-		toString(object.VoidObject{}),
-		toString(&object.IntObject{Value: 4}),
+		(object.VoidObject{}).ToString(),
+		(&object.IntObject{Value: 4}).ToString(),
 		"",
 	}
 	if diff := cmp.Diff(wants, gots); diff != "" {

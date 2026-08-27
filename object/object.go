@@ -1,62 +1,62 @@
 package object
 
 import (
-	"strconv"
+	"fmt"
 )
 
+func toStringObject(obj Object) string {
+	return fmt.Sprintf("[%T] %+v", obj, obj)
+}
+
 type Object interface {
-	TokenLiteral() string
+	ToString() string
 }
 
 type VoidObject struct {
 }
 
-func (o VoidObject) TokenLiteral() string {
-	return "Void"
+func (o VoidObject) ToString() string {
+	return toStringObject(o)
 }
 
 type IntObject struct {
 	Value int
 }
 
-func (o *IntObject) TokenLiteral() string {
-	return strconv.Itoa(o.Value)
+func (o *IntObject) ToString() string {
+	return toStringObject(o)
 }
 
 type SymbolObject struct {
 	Value string
 }
 
-func (o *SymbolObject) TokenLiteral() string {
-	return o.Value
+func (o *SymbolObject) ToString() string {
+	return toStringObject(o)
 }
 
 type OperatorObject struct {
 	Value string
 }
 
-func (o *OperatorObject) TokenLiteral() string {
-	return o.Value
+func (o *OperatorObject) ToString() string {
+	return toStringObject(o)
 }
 
 type BoolObject struct {
 	Value bool
 }
 
-func (o *BoolObject) TokenLiteral() string {
-	if o.Value {
-		return "#t"
-	} else {
-		return "#f"
-	}
+func (o *BoolObject) ToString() string {
+	return toStringObject(o)
 }
 
 type ListObject struct {
 	Value []Object
 }
 
-func (o *ListObject) TokenLiteral() string {
-	return "List"
+func (o *ListObject) ToString() string {
+	return toStringObject(o)
 }
 
 type LambdaObject struct {
@@ -64,6 +64,6 @@ type LambdaObject struct {
 	Body   *ListObject
 }
 
-func (o *LambdaObject) TokenLiteral() string {
-	return "Lambda"
+func (o *LambdaObject) ToString() string {
+	return toStringObject(o)
 }
