@@ -34,6 +34,15 @@ func (o *SymbolObject) TokenLiteral() string {
 	return o.Value
 }
 
+type OperatorObject struct {
+	Object
+	Value string
+}
+
+func (o *OperatorObject) TokenLiteral() string {
+	return o.Value
+}
+
 type BoolObject struct {
 	Object
 	Value bool

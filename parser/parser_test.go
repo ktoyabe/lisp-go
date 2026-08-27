@@ -11,7 +11,7 @@ import (
 func TestParse(t *testing.T) {
 	input := "(+ 5 10)"
 	want := []object.Object{
-		&object.SymbolObject{Value: "+"},
+		&object.OperatorObject{Value: "+"},
 		&object.IntObject{Value: 5},
 		&object.IntObject{Value: 10},
 	}
@@ -21,7 +21,7 @@ func TestParse(t *testing.T) {
 func TestParseLess(t *testing.T) {
 	input := "(< 5 10)"
 	want := []object.Object{
-		&object.SymbolObject{Value: "<"},
+		&object.OperatorObject{Value: "<"},
 		&object.IntObject{Value: 5},
 		&object.IntObject{Value: 10},
 	}
@@ -31,7 +31,7 @@ func TestParseLess(t *testing.T) {
 func TestParseEQ(t *testing.T) {
 	input := "(= 5 10)"
 	want := []object.Object{
-		&object.SymbolObject{Value: "="},
+		&object.OperatorObject{Value: "="},
 		&object.IntObject{Value: 5},
 		&object.IntObject{Value: 10},
 	}
@@ -41,7 +41,7 @@ func TestParseEQ(t *testing.T) {
 func TestParseNotEQ(t *testing.T) {
 	input := "(!= 5 10)"
 	want := []object.Object{
-		&object.SymbolObject{Value: "!="},
+		&object.OperatorObject{Value: "!="},
 		&object.IntObject{Value: 5},
 		&object.IntObject{Value: 10},
 	}
@@ -53,10 +53,10 @@ func TestParseRecursive(t *testing.T) {
 	(+ 5 (* 2 3))
 	`
 	want := []object.Object{
-		&object.SymbolObject{Value: "+"},
+		&object.OperatorObject{Value: "+"},
 		&object.IntObject{Value: 5},
 		&object.ListObject{Value: []object.Object{
-			&object.SymbolObject{Value: "*"},
+			&object.OperatorObject{Value: "*"},
 			&object.IntObject{Value: 2},
 			&object.IntObject{Value: 3},
 		}},
@@ -158,7 +158,7 @@ func TestParseLambda(t *testing.T) {
 		&object.LambdaObject{
 			Params: []string{"x", "y"},
 			Body: &object.ListObject{Value: []object.Object{
-				&object.SymbolObject{Value: "+"},
+				&object.OperatorObject{Value: "+"},
 				&object.SymbolObject{Value: "x"},
 				&object.SymbolObject{Value: "y"},
 			}},

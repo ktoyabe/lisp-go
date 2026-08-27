@@ -73,20 +73,30 @@ func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	head := obj.Value[0]
 
 	switch v := head.(type) {
-	case *object.SymbolObject:
+	case *object.OperatorObject:
+		if len(obj.Value) != 3 { // (operator lhs rhs)
+			return nil, fmt.Errorf("eval_list: operator object require 3 elements. got=%d", len(obj.Value))
+		}
+		lhs := obj.Value[1]
+		rhs := obj.Value[2]
 		switch v.Value {
 		case "+":
-			return eval_binary_op(obj, env)
+			return eval_binary_op(v, lhs, rhs, env)
 		case "*":
-			return eval_binary_op(obj, env)
+			return eval_binary_op(v, lhs, rhs, env)
 		case "<":
-			return eval_binary_op(obj, env)
+			return eval_binary_op(v, lhs, rhs, env)
 		case ">":
-			return eval_binary_op(obj, env)
+			return eval_binary_op(v, lhs, rhs, env)
 		case "=":
-			return eval_binary_op(obj, env)
+			return eval_binary_op(v, lhs, rhs, env)
 		case "!=":
-			return eval_binary_op(obj, env)
+			return eval_binary_op(v, lhs, rhs, env)
+		default:
+			return nil, fmt.Errorf("eval_list: unsupported operator type. operator=%v", v)
+		}
+	case *object.SymbolObject:
+		switch v.Value {
 		case "define":
 			return eval_define(obj, env)
 		case "if":
@@ -108,27 +118,18 @@ func eval_list(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	}
 }
 
-func eval_binary_op(obj *object.ListObject, env *env.Env) (object.Object, error) {
-	if len(obj.Value) != 3 {
-		return nil, fmt.Errorf("binary operator size must be 3. length=%d", len(obj.Value))
-	}
-	head := obj.Value[0]
-	op, ok := head.(*object.SymbolObject)
-	if !ok {
-		return nil, fmt.Errorf("eval_binary_op head object not SymbolObject. head=%v, type=%T", head, head)
-	}
-
-	lhs, err := eval_obj(obj.Value[1], env)
+func eval_binary_op(op *object.OperatorObject, lhs object.Object, rhs object.Object, env *env.Env) (object.Object, error) {
+	lhs_obj, err := eval_obj(lhs, env)
 	if err != nil {
 		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(obj.Value[1]). error=%v", err)
 	}
-	lhs_int, lhs_ok := lhs.(*object.IntObject)
+	lhs_int, lhs_ok := lhs_obj.(*object.IntObject)
 
-	rhs, err := eval_obj(obj.Value[2], env)
+	rhs_obj, err := eval_obj(rhs, env)
 	if err != nil {
 		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(obj.Value[2]). error=%v", err)
 	}
-	rhs_int, rhs_ok := rhs.(*object.IntObject)
+	rhs_int, rhs_ok := rhs_obj.(*object.IntObject)
 
 	if !(lhs_ok && rhs_ok) {
 		return nil, fmt.Errorf("eval_binary_op support only (op IntObject IntObject)")

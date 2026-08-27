@@ -102,10 +102,22 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 			o := &object.BoolObject{Value: false}
 			list = append(list, o)
 		case token.PLUS:
-			o := &object.SymbolObject{Value: tok.Literal}
+			o := &object.OperatorObject{Value: tok.Literal}
 			list = append(list, o)
 		case token.MUL:
-			o := &object.SymbolObject{Value: tok.Literal}
+			o := &object.OperatorObject{Value: tok.Literal}
+			list = append(list, o)
+		case token.LESS:
+			o := &object.OperatorObject{Value: tok.Literal}
+			list = append(list, o)
+		case token.GREATER:
+			o := &object.OperatorObject{Value: tok.Literal}
+			list = append(list, o)
+		case token.EQ:
+			o := &object.OperatorObject{Value: tok.Literal}
+			list = append(list, o)
+		case token.NOT_EQ:
+			o := &object.OperatorObject{Value: tok.Literal}
 			list = append(list, o)
 		case token.INT:
 			i, err := strconv.Atoi(tok.Literal)
