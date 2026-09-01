@@ -358,7 +358,7 @@ func TestEvalFloat(t *testing.T) {
 	}
 }
 
-func TestEvalCompare(t *testing.T) {
+func TestEvalFloatEq(t *testing.T) {
 	env := env.New()
 
 	inputs := []string{
@@ -386,7 +386,7 @@ func TestEvalCompare(t *testing.T) {
 	}
 }
 
-func TestEvalLessThan(t *testing.T) {
+func TestEvalFloatLessThan(t *testing.T) {
 	env := env.New()
 
 	inputs := []string{
@@ -408,7 +408,7 @@ func TestEvalLessThan(t *testing.T) {
 	}
 }
 
-func TestEvalGreaterThan(t *testing.T) {
+func TestEvalFloatGreaterThan(t *testing.T) {
 	env := env.New()
 
 	inputs := []string{
