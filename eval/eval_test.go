@@ -254,12 +254,16 @@ func TestEvalStringEq(t *testing.T) {
 
 	inputs := []string{
 		"(= \"abc\" \"abcd\")",
+		"(= \"abc\" \"abc\")",
 		"(!= \"abc\" \"abcd\")",
+		"(!= \"abc\" \"abc\")",
 	}
 
 	wants := []object.Object{
 		&object.BoolObject{Value: false},
 		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: false},
 	}
 
 	for i, input := range inputs {
