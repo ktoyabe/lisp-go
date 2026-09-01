@@ -273,6 +273,30 @@ func TestEvalStringEq(t *testing.T) {
 	}
 }
 
+func TestEvalEmptyString(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(= \"\" \"abc\")",
+		"(= \"\" \"\")",
+		"(!= \"\" \"abcd\")",
+		"(!= \"\" \"\")",
+	}
+
+	wants := []object.Object{
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: false},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
+
 func TestEvalStringConcat(t *testing.T) {
 	env := env.New()
 
