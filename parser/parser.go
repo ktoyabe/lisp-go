@@ -122,6 +122,12 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 		case token.NOT_EQ:
 			o := &object.OperatorObject{Value: tok.Literal}
 			list = append(list, o)
+		case token.AND:
+			o := &object.OperatorObject{Value: tok.Literal}
+			list = append(list, o)
+		case token.OR:
+			o := &object.OperatorObject{Value: tok.Literal}
+			list = append(list, o)
 		case token.INT:
 			i, err := strconv.Atoi(tok.Literal)
 			if err != nil {

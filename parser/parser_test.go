@@ -58,6 +58,26 @@ func TestParseNotEQ(t *testing.T) {
 	testParse(t, input, want)
 }
 
+func TestParseOr(t *testing.T) {
+	input := "(| #t #f)"
+	want := []object.Object{
+		&object.OperatorObject{Value: "|"},
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: false},
+	}
+	testParse(t, input, want)
+}
+
+func TestParseAnd(t *testing.T) {
+	input := "(& #t #f)"
+	want := []object.Object{
+		&object.OperatorObject{Value: "&"},
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: false},
+	}
+	testParse(t, input, want)
+}
+
 func TestParseRecursive(t *testing.T) {
 	input := `
 	(+ 5 (* 2 3))

@@ -101,23 +101,7 @@ func evalList(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	}
 }
 
-func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Object, env *env.Env) (object.Object, error) {
-	lhs_obj, err := evalObj(lhs, env)
-	if err != nil {
-		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(lhs). error=%v", err)
-	}
-	lhs_int, lhs_ok := lhs_obj.(*object.IntObject)
-
-	rhs_obj, err := evalObj(rhs, env)
-	if err != nil {
-		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(rhs). error=%v", err)
-	}
-	rhs_int, rhs_ok := rhs_obj.(*object.IntObject)
-
-	if !(lhs_ok && rhs_ok) {
-		return nil, fmt.Errorf("eval_binary_op support only (op IntObject IntObject)")
-	}
-
+func evalBinaryOpInt(op *object.OperatorObject, lhs_int *object.IntObject, rhs_int *object.IntObject) (object.Object, error) {
 	switch op.Value {
 	case "+":
 		return &object.IntObject{Value: lhs_int.Value + rhs_int.Value}, nil
@@ -134,7 +118,47 @@ func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Objec
 	case "!=":
 		return &object.BoolObject{Value: lhs_int.Value != rhs_int.Value}, nil
 	default:
-		return nil, fmt.Errorf("eval_binary_op unsuppoted operator. op=%v", op)
+		return nil, fmt.Errorf("evalBinaryOpInt: unsuppoted operator. op=%v", op)
+	}
+}
+
+func evalBinaryOpBool(op *object.OperatorObject, lhs *object.BoolObject, rhs *object.BoolObject) (object.Object, error) {
+	switch op.Value {
+	case "&":
+		return &object.BoolObject{Value: lhs.Value && rhs.Value}, nil
+	case "|":
+		return &object.BoolObject{Value: lhs.Value || rhs.Value}, nil
+	default:
+		return nil, fmt.Errorf("evalBinaryOpBool: unsupported operator. op=%v", op)
+	}
+}
+
+func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Object, env *env.Env) (object.Object, error) {
+	lhs_obj, err := evalObj(lhs, env)
+	if err != nil {
+		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(lhs). error=%v", err)
+	}
+	rhs_obj, err := evalObj(rhs, env)
+	if err != nil {
+		return nil, fmt.Errorf("eval_binary_op: failed to eval_obj(rhs). error=%v", err)
+	}
+	switch l := lhs_obj.(type) {
+	case *object.IntObject:
+		switch r := rhs_obj.(type) {
+		case *object.IntObject:
+			return evalBinaryOpInt(op, l, r)
+		default:
+			return nil, fmt.Errorf("evalBinaryOp: unsupported (op, lhs, rhs) type. op=%v, lhsType=%T, rhsType=%T", op, lhs_obj, rhs_obj)
+		}
+	case *object.BoolObject:
+		switch r := rhs_obj.(type) {
+		case *object.BoolObject:
+			return evalBinaryOpBool(op, l, r)
+		default:
+			return nil, fmt.Errorf("evalBinaryOp: unsupported (op, lhs, rhs) type. op=%v, lhsType=%T, rhsType=%T", op, lhs_obj, rhs_obj)
+		}
+	default:
+		return nil, fmt.Errorf("evalBinaryOp: unsupported (op, lhs, rhs) type. op=%v, lhsType=%T, rhsType=%T", op, lhs_obj, rhs_obj)
 	}
 }
 

@@ -29,6 +29,8 @@ const (
 	GREATER = ">"
 	EQ      = "="
 	NOT_EQ  = "!="
+	AND     = "&"
+	OR      = "|"
 
 	NE = "!"
 

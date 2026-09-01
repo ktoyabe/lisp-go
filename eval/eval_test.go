@@ -128,6 +128,44 @@ func TestEvalNotEq(t *testing.T) {
 	}
 }
 
+func TestEvalOr(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(| #t #t)",
+		"(| #t #f)",
+		"(| #f #f)",
+	}
+	wants := []object.Object{
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: false},
+	}
+
+	for i, tt := range inputs {
+		testEvalObject(t, tt, env, wants[i])
+	}
+}
+
+func TestEvalAnd(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(& #t #t)",
+		"(& #t #f)",
+		"(& #f #f)",
+	}
+	wants := []object.Object{
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: false},
+	}
+
+	for i, tt := range inputs {
+		testEvalObject(t, tt, env, wants[i])
+	}
+}
+
 func TestEvalIf(t *testing.T) {
 	env := env.New()
 

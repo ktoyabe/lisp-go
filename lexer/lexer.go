@@ -71,6 +71,10 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.NE, l.ch)
 		}
+	case '&':
+		tok = newToken(token.AND, l.ch)
+	case '|':
+		tok = newToken(token.OR, l.ch)
 	case '(':
 		tok = newToken(token.LPAREN, l.ch)
 	case ')':

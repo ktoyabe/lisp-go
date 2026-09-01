@@ -170,3 +170,37 @@ func TestNextTokenLambda(t *testing.T) {
 		t.Error(diff)
 	}
 }
+
+func TestBooleanAnd(t *testing.T) {
+	input := "(& #t #f)"
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.AND, Literal: "&"},
+		{Type: token.TRUE, Literal: "#t"},
+		{Type: token.FALSE, Literal: "#f"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
+}
+
+func TestBooleanOr(t *testing.T) {
+	input := "(| #t #f)"
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.OR, Literal: "|"},
+		{Type: token.TRUE, Literal: "#t"},
+		{Type: token.FALSE, Literal: "#f"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
+}
