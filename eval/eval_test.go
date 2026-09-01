@@ -1,6 +1,7 @@
 package eval
 
 import (
+	"fmt"
 	"lisp-go/env"
 	"lisp-go/lexer"
 	"lisp-go/object"
@@ -22,14 +23,15 @@ func eval(t *testing.T, input string, env *env.Env) (object.Object, error) {
 	return Eval(obj, env)
 }
 
-func testEvalObject(t *testing.T, input string, env *env.Env, want object.Object) {
+func testEvalObject(t *testing.T, input string, env *env.Env, want object.Object) string {
 	got, err := eval(t, input, env)
 	if err != nil {
-		t.Errorf("eval has error. error=%v", err)
+		return fmt.Sprintf("eval has error. error=%v", err)
 	}
 	if diff := cmp.Diff(want, got); diff != "" {
-		t.Errorf("input: %s, diff=%v", input, diff)
+		return fmt.Sprintf("input: %s, want=%v, got=%v, diff=%v", input, want, got, diff)
 	}
+	return ""
 }
 
 func TestEvalBinaryOp(t *testing.T) {
@@ -49,7 +51,9 @@ func TestEvalBinaryOp(t *testing.T) {
 	}
 
 	for i, tt := range inputs {
-		testEvalObject(t, tt, env, wants[i])
+		if diff := testEvalObject(t, tt, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
 	}
 }
 
@@ -67,7 +71,9 @@ func TestEval(t *testing.T) {
 	}
 
 	for i, tt := range inputs {
-		testEvalObject(t, tt, env, wants[i])
+		if diff := testEvalObject(t, tt, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
 	}
 }
 
@@ -86,7 +92,9 @@ func TestEvalComparison(t *testing.T) {
 	}
 
 	for i, tt := range inputs {
-		testEvalObject(t, tt, env, wants[i])
+		if diff := testEvalObject(t, tt, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
 	}
 }
 
@@ -105,7 +113,9 @@ func TestEvalEq(t *testing.T) {
 	}
 
 	for i, tt := range inputs {
-		testEvalObject(t, tt, env, wants[i])
+		if diff := testEvalObject(t, tt, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
 	}
 }
 
@@ -124,7 +134,9 @@ func TestEvalNotEq(t *testing.T) {
 	}
 
 	for i, tt := range inputs {
-		testEvalObject(t, tt, env, wants[i])
+		if diff := testEvalObject(t, tt, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
 	}
 }
 
@@ -143,7 +155,9 @@ func TestEvalOr(t *testing.T) {
 	}
 
 	for i, tt := range inputs {
-		testEvalObject(t, tt, env, wants[i])
+		if diff := testEvalObject(t, tt, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
 	}
 }
 
@@ -162,7 +176,9 @@ func TestEvalAnd(t *testing.T) {
 	}
 
 	for i, tt := range inputs {
-		testEvalObject(t, tt, env, wants[i])
+		if diff := testEvalObject(t, tt, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
 	}
 }
 
@@ -179,7 +195,9 @@ func TestEvalIf(t *testing.T) {
 	}
 
 	for i, tt := range inputs {
-		testEvalObject(t, tt, env, wants[i])
+		if diff := testEvalObject(t, tt, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
 	}
 }
 
@@ -197,7 +215,9 @@ func TestEvalLambda(t *testing.T) {
 	}
 
 	for i, input := range inputs {
-		testEvalObject(t, input, env, wants[i])
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
 	}
 }
 
@@ -223,6 +243,8 @@ func TestEvalFib(t *testing.T) {
 	}
 
 	for i, input := range inputs {
-		testEvalObject(t, input, env, wants[i])
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
 	}
 }
