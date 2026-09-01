@@ -18,6 +18,8 @@ func evalObj(obj object.Object, env *env.Env) (object.Object, error) {
 		return v, nil
 	case *object.StringObject:
 		return v, nil
+	case *object.FloatObject:
+		return v, nil
 	case *object.ListObject:
 		return evalList(v, env)
 	case *object.SymbolObject:
@@ -148,6 +150,15 @@ func evalBinaryOpString(op *object.OperatorObject, lhs *object.StringObject, rhs
 	}
 }
 
+func evalBinaryOpFloat(op *object.OperatorObject, lhs float64, rhs float64) (object.Object, error) {
+	switch op.Value {
+	case "+":
+		return &object.FloatObject{Value: lhs + rhs}, nil
+	default:
+		return nil, fmt.Errorf("evalBinaryOpFloat: unsupported operator=%v", op)
+	}
+}
+
 func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Object, env *env.Env) (object.Object, error) {
 	lhs_obj, err := evalObj(lhs, env)
 	if err != nil {
@@ -162,6 +173,13 @@ func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Objec
 		switch r := rhs_obj.(type) {
 		case *object.IntObject:
 			return evalBinaryOpInt(op, l, r)
+		default:
+			return nil, fmt.Errorf("evalBinaryOp: unsupported (op, lhs, rhs) type. op=%v, lhsType=%T, rhsType=%T", op, lhs_obj, rhs_obj)
+		}
+	case *object.FloatObject:
+		switch r := rhs_obj.(type) {
+		case *object.FloatObject:
+			return evalBinaryOpFloat(op, l.Value, r.Value)
 		default:
 			return nil, fmt.Errorf("evalBinaryOp: unsupported (op, lhs, rhs) type. op=%v, lhsType=%T, rhsType=%T", op, lhs_obj, rhs_obj)
 		}

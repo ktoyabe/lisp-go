@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"lisp-go/token"
+	"strings"
 )
 
 type Lexer struct {
@@ -97,7 +98,14 @@ func (l *Lexer) NextToken() token.Token {
 			return tok
 		} else if isDigit(l.ch) {
 			tok.Type = token.INT
-			tok.Literal = l.readNumber()
+			numStr := l.readNumber()
+			if strings.Contains(numStr, ".") {
+				tok.Type = token.FLOAT
+				tok.Literal = numStr
+			} else {
+				tok.Type = token.INT
+				tok.Literal = numStr
+			}
 			return tok
 		}
 	}
@@ -118,7 +126,7 @@ func (l *Lexer) skipWhitespace() {
 
 func (l *Lexer) readNumber() string {
 	position := l.position
-	for isDigit(l.ch) {
+	for isDigit(l.ch) || l.ch == '.' {
 		l.readChar()
 	}
 	return l.input[position:l.position]

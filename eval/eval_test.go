@@ -320,3 +320,21 @@ func TestEvalStringConcat(t *testing.T) {
 		}
 	}
 }
+
+func TestEvalFloat(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(+ 1.23 1.00)",
+	}
+
+	wants := []object.Object{
+		&object.FloatObject{Value: 2.23},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}

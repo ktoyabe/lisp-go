@@ -221,3 +221,20 @@ func TestStringEq(t *testing.T) {
 		t.Error(diff)
 	}
 }
+
+func TestFloat(t *testing.T) {
+	input := `(+ 1.23 4.56)`
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.PLUS, Literal: "+"},
+		{Type: token.FLOAT, Literal: "1.23"},
+		{Type: token.FLOAT, Literal: "4.56"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
+}

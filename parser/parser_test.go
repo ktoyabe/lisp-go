@@ -105,6 +105,18 @@ func TestParseString(t *testing.T) {
 	}
 }
 
+func TestParserFloat(t *testing.T) {
+	input := "(+ 1.23 4)"
+	want := []object.Object{
+		&object.OperatorObject{Value: "+"},
+		&object.FloatObject{Value: 1.23},
+		&object.IntObject{Value: 4},
+	}
+	if diff := testParse(t, input, want); diff != "" {
+		t.Error(diff)
+	}
+}
+
 func TestParseRecursive(t *testing.T) {
 	input := `
 	(+ 5 (* 2 3))

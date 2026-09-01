@@ -21,6 +21,7 @@ const (
 	SYMBOL = "SYMBOL"
 	INT    = "INT"
 	STRING = "STRING"
+	FLOAT  = "FLOAT"
 
 	// operators
 	PLUS    = "+"

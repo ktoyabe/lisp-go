@@ -27,6 +27,14 @@ func (o *IntObject) ToString() string {
 	return toStringObject(o)
 }
 
+type FloatObject struct {
+	Value float64
+}
+
+func (o *FloatObject) ToString() string {
+	return toStringObject(o)
+}
+
 type SymbolObject struct {
 	Value string
 }

@@ -135,6 +135,13 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 			}
 			o := &object.IntObject{Value: i}
 			list = append(list, o)
+		case token.FLOAT:
+			f, err := strconv.ParseFloat(tok.Literal, 64)
+			if err != nil {
+				return nil, fmt.Errorf("failed to ParseFloat. value=%v", tok.Literal)
+			}
+			o := &object.FloatObject{Value: f}
+			list = append(list, o)
 		case token.STRING:
 			o := &object.StringObject{Value: tok.Literal}
 			list = append(list, o)
