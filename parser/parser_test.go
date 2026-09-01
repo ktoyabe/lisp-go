@@ -93,6 +93,18 @@ func TestParseAnd(t *testing.T) {
 	}
 }
 
+func TestParseString(t *testing.T) {
+	input := "(= \"abc\" \"efg\")"
+	want := []object.Object{
+		&object.OperatorObject{Value: "="},
+		&object.StringObject{Value: "abc"},
+		&object.StringObject{Value: "efg"},
+	}
+	if diff := testParse(t, input, want); diff != "" {
+		t.Error(diff)
+	}
+}
+
 func TestParseRecursive(t *testing.T) {
 	input := `
 	(+ 5 (* 2 3))

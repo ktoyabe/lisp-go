@@ -83,6 +83,10 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = l.readBool()
 		tok.Type = token.LookupSymbol(tok.Literal)
 		return tok
+	case '"':
+		tok.Literal = l.readString()
+		tok.Type = token.STRING
+		return tok
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -126,6 +130,19 @@ func (l *Lexer) readSymbol() string {
 		l.readChar()
 	}
 	return l.input[position:l.position]
+}
+
+func (l *Lexer) readString() string {
+	l.readChar() // consume '"'
+
+	position := l.position // start string position: next of '"' position
+	for l.ch != '"' {
+		l.readChar()
+	}
+	str := l.input[position:l.position]
+	l.readChar() // consume end of '"'
+
+	return str
 }
 
 func (l *Lexer) readBool() string {

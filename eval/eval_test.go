@@ -248,3 +248,23 @@ func TestEvalFib(t *testing.T) {
 		}
 	}
 }
+
+func TestEvalStringEq(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(= \"abc\" \"abcd\")",
+		"(!= \"abc\" \"abcd\")",
+	}
+
+	wants := []object.Object{
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: true},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}

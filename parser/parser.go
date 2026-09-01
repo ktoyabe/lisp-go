@@ -135,6 +135,9 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 			}
 			o := &object.IntObject{Value: i}
 			list = append(list, o)
+		case token.STRING:
+			o := &object.StringObject{Value: tok.Literal}
+			list = append(list, o)
 		case token.DEFINE:
 			o := &object.SymbolObject{Value: tok.Literal}
 			list = append(list, o)

@@ -20,6 +20,7 @@ const (
 
 	SYMBOL = "SYMBOL"
 	INT    = "INT"
+	STRING = "STRING"
 
 	// operators
 	PLUS    = "+"

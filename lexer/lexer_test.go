@@ -204,3 +204,20 @@ func TestBooleanOr(t *testing.T) {
 		t.Error(diff)
 	}
 }
+
+func TestStringEq(t *testing.T) {
+	input := `(= "abc" "efgh")`
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.EQ, Literal: "="},
+		{Type: token.STRING, Literal: "abc"},
+		{Type: token.STRING, Literal: "efgh"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
+}

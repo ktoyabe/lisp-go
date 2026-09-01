@@ -16,12 +16,14 @@ func evalObj(obj object.Object, env *env.Env) (object.Object, error) {
 		return v, nil
 	case *object.BoolObject:
 		return v, nil
+	case *object.StringObject:
+		return v, nil
 	case *object.ListObject:
 		return evalList(v, env)
 	case *object.SymbolObject:
 		return evalSymbol(v, env)
 	default:
-		return nil, fmt.Errorf("Unsupported type. obj=%v, type=%T", obj, obj)
+		return nil, fmt.Errorf("evalObj: Unsupported type. obj=%v, type=%T", obj, obj)
 	}
 }
 
@@ -133,6 +135,17 @@ func evalBinaryOpBool(op *object.OperatorObject, lhs *object.BoolObject, rhs *ob
 	}
 }
 
+func evalBinaryOpString(op *object.OperatorObject, lhs *object.StringObject, rhs *object.StringObject) (object.Object, error) {
+	switch op.Value {
+	case "=":
+		return &object.BoolObject{Value: lhs.Value == rhs.Value}, nil
+	case "!=":
+		return &object.BoolObject{Value: lhs.Value != rhs.Value}, nil
+	default:
+		return nil, fmt.Errorf("evalBinaryOpString: unsupported operator. op=%v", op)
+	}
+}
+
 func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Object, env *env.Env) (object.Object, error) {
 	lhs_obj, err := evalObj(lhs, env)
 	if err != nil {
@@ -154,6 +167,13 @@ func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Objec
 		switch r := rhs_obj.(type) {
 		case *object.BoolObject:
 			return evalBinaryOpBool(op, l, r)
+		default:
+			return nil, fmt.Errorf("evalBinaryOp: unsupported (op, lhs, rhs) type. op=%v, lhsType=%T, rhsType=%T", op, lhs_obj, rhs_obj)
+		}
+	case *object.StringObject:
+		switch r := rhs_obj.(type) {
+		case *object.StringObject:
+			return evalBinaryOpString(op, l, r)
 		default:
 			return nil, fmt.Errorf("evalBinaryOp: unsupported (op, lhs, rhs) type. op=%v, lhsType=%T, rhsType=%T", op, lhs_obj, rhs_obj)
 		}

@@ -67,3 +67,11 @@ type LambdaObject struct {
 func (o *LambdaObject) ToString() string {
 	return toStringObject(o)
 }
+
+type StringObject struct {
+	Value string
+}
+
+func (o *StringObject) ToString() string {
+	return toStringObject(o)
+}
