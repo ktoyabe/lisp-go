@@ -385,3 +385,47 @@ func TestEvalCompare(t *testing.T) {
 		}
 	}
 }
+
+func TestEvalLessThan(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(< 1.23 1.22)",
+		"(< 1.23 1.23)",
+		"(< 1.23 1.24)",
+	}
+
+	wants := []object.Object{
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: true},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
+
+func TestEvalGreaterThan(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(> 1.23 1.22)",
+		"(> 1.23 1.23)",
+		"(> 1.23 1.24)",
+	}
+
+	wants := []object.Object{
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: false},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
