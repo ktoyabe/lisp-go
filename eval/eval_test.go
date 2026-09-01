@@ -272,3 +272,27 @@ func TestEvalStringEq(t *testing.T) {
 		}
 	}
 }
+
+func TestEvalStringConcat(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(+ \"abc\" \"defg\")",
+		"(+ \"abc\" \"\")",
+		"(+ \"\" \"defg\")",
+		"(+ \"\" \"\")",
+	}
+
+	wants := []object.Object{
+		&object.StringObject{Value: "abcdefg"},
+		&object.StringObject{Value: "abc"},
+		&object.StringObject{Value: "defg"},
+		&object.StringObject{Value: ""},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}

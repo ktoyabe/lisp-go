@@ -141,6 +141,8 @@ func evalBinaryOpString(op *object.OperatorObject, lhs *object.StringObject, rhs
 		return &object.BoolObject{Value: lhs.Value == rhs.Value}, nil
 	case "!=":
 		return &object.BoolObject{Value: lhs.Value != rhs.Value}, nil
+	case "+":
+		return &object.StringObject{Value: lhs.Value + rhs.Value}, nil
 	default:
 		return nil, fmt.Errorf("evalBinaryOpString: unsupported operator. op=%v", op)
 	}
