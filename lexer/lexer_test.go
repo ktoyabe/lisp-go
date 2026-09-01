@@ -7,16 +7,17 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func testLexer(t *testing.T, input string, want []token.Token) {
+func testLexer(t *testing.T, input string, want []token.Token) string {
 	l := New(input)
 
 	for _, tt := range want {
 		tok := l.NextToken()
 
 		if diff := cmp.Diff(tok, tt); diff != "" {
-			t.Errorf("got: %v, want: %v", tok, tt)
+			return diff
 		}
 	}
+	return ""
 }
 
 func TestNextTokenINT(t *testing.T) {
@@ -32,7 +33,9 @@ func TestNextTokenINT(t *testing.T) {
 		{Type: token.EOF, Literal: ""},
 	}
 
-	testLexer(t, input, tests)
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
 }
 
 func TestNextTokenMinus(t *testing.T) {
@@ -48,7 +51,9 @@ func TestNextTokenMinus(t *testing.T) {
 		{Type: token.EOF, Literal: ""},
 	}
 
-	testLexer(t, input, tests)
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
 }
 
 func TestNextTokenSYMBOL(t *testing.T) {
@@ -68,7 +73,9 @@ func TestNextTokenSYMBOL(t *testing.T) {
 		{Type: token.EOF, Literal: ""},
 	}
 
-	testLexer(t, input, tests)
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
 }
 
 func TestNextTokenIf(t *testing.T) {
@@ -84,7 +91,9 @@ func TestNextTokenIf(t *testing.T) {
 		{Type: token.EOF, Literal: ""},
 	}
 
-	testLexer(t, input, tests)
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
 }
 
 func TestNextTokenLess(t *testing.T) {
@@ -99,7 +108,9 @@ func TestNextTokenLess(t *testing.T) {
 		{Type: token.EOF, Literal: ""},
 	}
 
-	testLexer(t, input, tests)
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
 }
 
 func TestNextTokenEq(t *testing.T) {
@@ -114,7 +125,9 @@ func TestNextTokenEq(t *testing.T) {
 		{Type: token.EOF, Literal: ""},
 	}
 
-	testLexer(t, input, tests)
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
 }
 
 func TestNextTokenNotEq(t *testing.T) {
@@ -129,7 +142,9 @@ func TestNextTokenNotEq(t *testing.T) {
 		{Type: token.EOF, Literal: ""},
 	}
 
-	testLexer(t, input, tests)
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
 }
 
 func TestNextTokenLambda(t *testing.T) {
@@ -151,5 +166,7 @@ func TestNextTokenLambda(t *testing.T) {
 		{Type: token.EOF, Literal: ""},
 	}
 
-	testLexer(t, input, tests)
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
 }
