@@ -429,3 +429,27 @@ func TestEvalFloatGreaterThan(t *testing.T) {
 		}
 	}
 }
+
+func TestEvalBinaryOpFloatVsInt(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(+ 1.23 1)",
+		"(+ 1 1.23)",
+		"(= 1 1.00)",
+		"(= 1.00 1)",
+	}
+
+	wants := []object.Object{
+		&object.FloatObject{Value: 2.23},
+		&object.FloatObject{Value: 2.23},
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: true},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}

@@ -186,11 +186,15 @@ func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Objec
 		switch r := rhs_obj.(type) {
 		case *object.IntObject:
 			return evalBinaryOpInt(op, l, r)
+		case *object.FloatObject:
+			return evalBinaryOpFloat(op, float64(l.Value), r.Value)
 		default:
 			return nil, fmt.Errorf("evalBinaryOp: unsupported (op, lhs, rhs) type. op=%v, lhsType=%T, rhsType=%T", op, lhs_obj, rhs_obj)
 		}
 	case *object.FloatObject:
 		switch r := rhs_obj.(type) {
+		case *object.IntObject:
+			return evalBinaryOpFloat(op, l.Value, float64(r.Value))
 		case *object.FloatObject:
 			return evalBinaryOpFloat(op, l.Value, r.Value)
 		default:
