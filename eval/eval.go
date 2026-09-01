@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"lisp-go/env"
 	"lisp-go/object"
+	"math"
 )
 
 func Eval(obj object.Object, env *env.Env) (object.Object, error) {
@@ -154,6 +155,14 @@ func evalBinaryOpFloat(op *object.OperatorObject, lhs float64, rhs float64) (obj
 	switch op.Value {
 	case "+":
 		return &object.FloatObject{Value: lhs + rhs}, nil
+	case "-":
+		return &object.FloatObject{Value: lhs - rhs}, nil
+	case "*":
+		return &object.FloatObject{Value: lhs * rhs}, nil
+	case "=":
+		return &object.BoolObject{Value: math.Abs(lhs-rhs) < 1e-9}, nil
+	case "!=":
+		return &object.BoolObject{Value: math.Abs(lhs-rhs) > 1e-9}, nil
 	default:
 		return nil, fmt.Errorf("evalBinaryOpFloat: unsupported operator=%v", op)
 	}

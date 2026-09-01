@@ -6,6 +6,7 @@ import (
 	"lisp-go/lexer"
 	"lisp-go/object"
 	"lisp-go/parser"
+	"math"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -28,8 +29,22 @@ func testEvalObject(t *testing.T, input string, env *env.Env, want object.Object
 	if err != nil {
 		return fmt.Sprintf("eval has error. error=%v", err)
 	}
-	if diff := cmp.Diff(want, got); diff != "" {
-		return fmt.Sprintf("input: %s, want=%v, got=%v, diff=%v", input, want, got, diff)
+	switch g := got.(type) {
+	case *object.FloatObject:
+		switch w := want.(type) {
+		case *object.FloatObject:
+			if math.Abs(g.Value-w.Value) < 1e-9 {
+				return ""
+			} else {
+				return fmt.Sprintf("input: %s, want=%v, got=%v", input, want, got)
+			}
+		default:
+			return fmt.Sprintf("typeError: input: %s, want=%v, got=%v", input, want, got)
+		}
+	default:
+		if diff := cmp.Diff(want, got); diff != "" {
+			return fmt.Sprintf("input: %s, want=%v, got=%v, diff=%v", input, want, got, diff)
+		}
 	}
 	return ""
 }
@@ -326,10 +341,42 @@ func TestEvalFloat(t *testing.T) {
 
 	inputs := []string{
 		"(+ 1.23 1.00)",
+		"(- 1.23 1.00)",
+		"(* 1.23 2.00)",
 	}
 
 	wants := []object.Object{
 		&object.FloatObject{Value: 2.23},
+		&object.FloatObject{Value: 0.23},
+		&object.FloatObject{Value: 2.46},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
+
+func TestEvalCompare(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(= 1.23 1.22)",
+		"(= 1.23 1.23)",
+		"(= 1.23 1.24)",
+		"(!= 1.23 1.22)",
+		"(!= 1.23 1.23)",
+		"(!= 1.23 1.24)",
+	}
+
+	wants := []object.Object{
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: true},
+		&object.BoolObject{Value: false},
+		&object.BoolObject{Value: true},
 	}
 
 	for i, input := range inputs {
