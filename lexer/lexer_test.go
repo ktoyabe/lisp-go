@@ -238,3 +238,20 @@ func TestFloat(t *testing.T) {
 		t.Error(diff)
 	}
 }
+
+func TestListData(t *testing.T) {
+	input := `(list 1 2)`
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.LIST, Literal: "list"},
+		{Type: token.INT, Literal: "1"},
+		{Type: token.INT, Literal: "2"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
+}

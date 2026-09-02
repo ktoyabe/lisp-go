@@ -4,6 +4,7 @@ var keywords = map[string]TokenType{
 	"define": DEFINE,
 	"if":     IF,
 	"lambda": LAMBDA,
+	"list":   LIST,
 	"#t":     TRUE,
 	"#f":     FALSE,
 }
@@ -22,6 +23,7 @@ const (
 	INT    = "INT"
 	STRING = "STRING"
 	FLOAT  = "FLOAT"
+	LIST   = "LIST"
 
 	// operators
 	PLUS    = "+"

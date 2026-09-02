@@ -174,6 +174,21 @@ func TestParseIf(t *testing.T) {
 	}
 }
 
+func TestParseListData(t *testing.T) {
+	input := "(define a (list 1 2))"
+	want := []object.Object{
+		&object.SymbolObject{Value: "define"},
+		&object.SymbolObject{Value: "a"},
+		&object.ListDataObject{Value: []object.Object{
+			&object.IntObject{Value: 1},
+			&object.IntObject{Value: 2},
+		}},
+	}
+	if diff := testParse(t, input, want); diff != "" {
+		t.Error(diff)
+	}
+}
+
 func testListObject(_ *testing.T, want *object.ListObject, got object.Object) string {
 	got_list, ok := got.(*object.ListObject)
 	if !ok {

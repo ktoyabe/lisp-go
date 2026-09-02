@@ -23,11 +23,26 @@ func evalObj(obj object.Object, env *env.Env) (object.Object, error) {
 		return v, nil
 	case *object.ListObject:
 		return evalList(v, env)
+	case *object.ListDataObject:
+		return evalListData(v, env)
 	case *object.SymbolObject:
 		return evalSymbol(v, env)
 	default:
 		return nil, fmt.Errorf("evalObj: Unsupported type. obj=%v, type=%T", obj, obj)
 	}
+}
+
+func evalListData(listData *object.ListDataObject, env *env.Env) (*object.ListDataObject, error) {
+	list := []object.Object{}
+
+	for _, o := range listData.Value {
+		obj, err := evalObj(o, env)
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, obj)
+	}
+	return &object.ListDataObject{Value: list}, nil
 }
 
 func evalSymbol(obj *object.SymbolObject, env *env.Env) (object.Object, error) {
@@ -172,6 +187,18 @@ func evalBinaryOpFloat(op *object.OperatorObject, lhs float64, rhs float64) (obj
 	}
 }
 
+func evalListDataConcat(lhs *object.ListDataObject, rhs *object.ListDataObject, env *env.Env) (object.Object, error) {
+	newLhs, err := evalListData(lhs, env)
+	if err != nil {
+		return nil, err
+	}
+	newRhs, err := evalListData(rhs, env)
+	if err != nil {
+		return nil, err
+	}
+	return &object.ListDataObject{Value: append(newLhs.Value, newRhs.Value...)}, nil
+}
+
 func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Object, env *env.Env) (object.Object, error) {
 	lhs_obj, err := evalObj(lhs, env)
 	if err != nil {
@@ -211,6 +238,13 @@ func evalBinaryOp(op *object.OperatorObject, lhs object.Object, rhs object.Objec
 		switch r := rhs_obj.(type) {
 		case *object.StringObject:
 			return evalBinaryOpString(op, l, r)
+		default:
+			return nil, fmt.Errorf("evalBinaryOp: unsupported (op, lhs, rhs) type. op=%v, lhsType=%T, rhsType=%T", op, lhs_obj, rhs_obj)
+		}
+	case *object.ListDataObject:
+		switch r := rhs_obj.(type) {
+		case *object.ListDataObject:
+			return evalListDataConcat(l, r, env)
 		default:
 			return nil, fmt.Errorf("evalBinaryOp: unsupported (op, lhs, rhs) type. op=%v, lhsType=%T, rhsType=%T", op, lhs_obj, rhs_obj)
 		}

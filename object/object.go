@@ -67,6 +67,14 @@ func (o *ListObject) ToString() string {
 	return toStringObject(o)
 }
 
+type ListDataObject struct {
+	Value []Object
+}
+
+func (o *ListDataObject) ToString() string {
+	return toStringObject(o)
+}
+
 type LambdaObject struct {
 	Params []string
 	Body   *ListObject

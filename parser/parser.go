@@ -87,7 +87,7 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 	var list []object.Object
 
 	for {
-		p.NextToken() // consume LParent
+		p.NextToken() // consume LParent or "list"
 
 		tok := p.curToken
 		if tok.Type == token.EOF {
@@ -149,7 +149,8 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 			o := &object.SymbolObject{Value: tok.Literal}
 			list = append(list, o)
 		case token.LPAREN:
-			if p.peekToken.Type == token.LAMBDA {
+			switch p.peekToken.Type {
+			case token.LAMBDA:
 				p.NextToken() // consume '('
 				lambda, err := p.parseLambda()
 				if err != nil {
@@ -157,12 +158,21 @@ func (p *Parser) parseList() (*object.ListObject, error) {
 				}
 				list = append(list, lambda)
 
-			} else {
+			case token.LIST:
+				p.NextToken() // consume '('
+				subList, err := p.parseList()
+				if err != nil {
+					return nil, err
+				}
+				listData := &object.ListDataObject{Value: subList.Value}
+				list = append(list, listData)
+			default:
 				subList, err := p.parseList()
 				if err != nil {
 					return nil, err
 				}
 				list = append(list, subList)
+
 			}
 		case token.RPAREN:
 			return &object.ListObject{Value: list}, nil

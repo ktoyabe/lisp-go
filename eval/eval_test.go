@@ -236,6 +236,32 @@ func TestEvalLambda(t *testing.T) {
 	}
 }
 
+func TestEvalList(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(define l (list 1 2 3))",
+		"(+ l (list 4 5))",
+	}
+
+	wants := []object.Object{
+		object.VoidObject{},
+		&object.ListDataObject{Value: []object.Object{
+			&object.IntObject{Value: 1},
+			&object.IntObject{Value: 2},
+			&object.IntObject{Value: 3},
+			&object.IntObject{Value: 4},
+			&object.IntObject{Value: 5},
+		}},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
+
 func TestEvalFib(t *testing.T) {
 	env := env.New()
 
