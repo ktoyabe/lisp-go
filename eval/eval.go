@@ -22,6 +22,8 @@ func evalObj(obj object.Object, env *env.Env) (object.Object, error) {
 		return v, nil
 	case *object.FloatObject:
 		return v, nil
+	case *object.LambdaObject:
+		return v, nil
 	case *object.ListObject:
 		return evalList(v, env)
 	case *object.ListDataObject:
@@ -51,7 +53,7 @@ func evalSymbol(obj *object.SymbolObject, env *env.Env) (object.Object, error) {
 	if !ok {
 		return nil, fmt.Errorf("eval_symbol: Unknown symbol name. name=\"%v\"", obj.Value)
 	}
-	return o, nil
+	return evalObj(o, env)
 }
 
 func evalDefine(obj *object.ListObject, env *env.Env) (object.Object, error) {
@@ -109,6 +111,8 @@ func evalList(obj *object.ListObject, env *env.Env) (object.Object, error) {
 			return evalPrint(obj, env)
 		case "inspect":
 			return evalInspect(obj, env)
+		case "map":
+			return evalMap(obj, env)
 		default:
 			v, err := evalSymbol(v, env)
 			if err != nil {
@@ -275,6 +279,44 @@ func evalIf(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	} else {
 		return evalObj(obj.Value[3], env)
 	}
+}
+
+func evalMap(obj *object.ListObject, env *env.Env) (object.Object, error) {
+	if len(obj.Value) != 3 {
+		return nil, fmt.Errorf("evalMap: list length must be 3. length=%d", len(obj.Value))
+	}
+
+	functionObject, err := evalObj(obj.Value[1], env)
+	if err != nil {
+		return nil, fmt.Errorf("evalMap: obj.Value[1] failed to evalObj. error=%v", err)
+	}
+	function, ok := (functionObject).(*object.LambdaObject)
+	if !ok {
+		return nil, fmt.Errorf("evalMap: obj.Value[1] must be LambdaObject. type=%T, object=%v", obj.Value[1], obj.Value[1])
+	}
+
+	listObject, err := evalObj(obj.Value[2], env)
+	if err != nil {
+		return nil, fmt.Errorf("evalMap: obj.Value[2] failed to evalObj. error=%v", err)
+	}
+	list, ok := (listObject).(*object.ListDataObject)
+	if !ok {
+		return nil, fmt.Errorf("evalMap: obj.Value[2] must be ListDataObject. type=%T, object=%v", obj.Value[2], obj.Value[2])
+	}
+
+	newList := []object.Object{}
+	for i, o := range list.Value {
+		obj, err := evalObj(o, env)
+		if err != nil {
+			return nil, fmt.Errorf("evalMap: obj.Value[2][%d] failed to evalObj. error=%v", i, err)
+		}
+		result, err := evalFunctionCall(function, []object.Object{obj}, env)
+		if err != nil {
+			return nil, fmt.Errorf("evalMap: obj.Value[2][%d] failed to evalFunctionCall. error=%v", i, err)
+		}
+		newList = append(newList, result)
+	}
+	return &object.ListDataObject{Value: newList}, nil
 }
 
 func evalPrintObject(obj *object.ListObject, env *env.Env, printer object.ObjectPrinter) (object.Object, error) {

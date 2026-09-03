@@ -216,7 +216,27 @@ func TestEvalIf(t *testing.T) {
 	}
 }
 
-func TestEvalLambda(t *testing.T) {
+func TestEvalLambdaArgs1(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(define double (lambda (r) (* r r)))",
+		"(double 2)",
+	}
+
+	wants := []object.Object{
+		object.VoidObject{},
+		&object.IntObject{Value: 4},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
+
+func TestEvalLambdaArgs2(t *testing.T) {
 	env := env.New()
 
 	inputs := []string{
@@ -489,6 +509,30 @@ func TestEvalBinaryOpFloatVsInt(t *testing.T) {
 		&object.FloatObject{Value: 2.23},
 		&object.BoolObject{Value: true},
 		&object.BoolObject{Value: true},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
+
+func TestEvalMap(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(define sqr (lambda (r) (* r r)))",
+		"(map sqr (list 1 2 3))",
+	}
+
+	wants := []object.Object{
+		object.VoidObject{},
+		&object.ListDataObject{Value: []object.Object{
+			&object.IntObject{Value: 1},
+			&object.IntObject{Value: 4},
+			&object.IntObject{Value: 9},
+		}},
 	}
 
 	for i, input := range inputs {

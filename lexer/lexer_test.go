@@ -1,20 +1,21 @@
 package lexer
 
 import (
+	"fmt"
 	"lisp-go/token"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
 
-func testLexer(t *testing.T, input string, want []token.Token) string {
+func testLexer(_ *testing.T, input string, wants []token.Token) string {
 	l := New(input)
 
-	for _, tt := range want {
-		tok := l.NextToken()
+	for i, want := range wants {
+		got := l.NextToken()
 
-		if diff := cmp.Diff(tok, tt); diff != "" {
-			return diff
+		if diff := cmp.Diff(got, want); diff != "" {
+			return fmt.Sprintf("[%d] want=%v, got=%v, diff=%v", i, want, got, diff)
 		}
 	}
 	return ""
@@ -247,6 +248,33 @@ func TestListData(t *testing.T) {
 		{Type: token.LIST, Literal: "list"},
 		{Type: token.INT, Literal: "1"},
 		{Type: token.INT, Literal: "2"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
+}
+
+func TestLambdaArg1(t *testing.T) {
+	input := `(define sqr (lambda (r) (* r r)))`
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.DEFINE, Literal: "define"},
+		{Type: token.SYMBOL, Literal: "sqr"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.LAMBDA, Literal: "lambda"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.SYMBOL, Literal: "r"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.MUL, Literal: "*"},
+		{Type: token.SYMBOL, Literal: "r"},
+		{Type: token.SYMBOL, Literal: "r"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.RPAREN, Literal: ")"},
 		{Type: token.RPAREN, Literal: ")"},
 		{Type: token.EOF, Literal: ""},
 	}

@@ -270,6 +270,26 @@ func TestParseLambda(t *testing.T) {
 			}},
 		},
 	}
+	if diff := testParse(t, input, want); diff != "" {
+		t.Error(diff)
+	}
+}
 
-	testParse(t, input, want)
+func TestParseLambdaArgs1(t *testing.T) {
+	input := "(define sqr (lambda (r) (* r r)))"
+	want := []object.Object{
+		&object.SymbolObject{Value: "define"},
+		&object.SymbolObject{Value: "sqr"},
+		&object.LambdaObject{
+			Params: []string{"r"},
+			Body: &object.ListObject{Value: []object.Object{
+				&object.OperatorObject{Value: "*"},
+				&object.SymbolObject{Value: "r"},
+				&object.SymbolObject{Value: "r"},
+			}},
+		},
+	}
+	if diff := testParse(t, input, want); diff != "" {
+		t.Error(diff)
+	}
 }
