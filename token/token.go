@@ -1,13 +1,14 @@
 package token
 
 var keywords = map[string]TokenType{
-	"define": DEFINE,
-	"if":     IF,
-	"lambda": LAMBDA,
-	"list":   LIST,
-	"#t":     TRUE,
-	"#f":     FALSE,
-	"print":  PRINT,
+	"define":  DEFINE,
+	"if":      IF,
+	"lambda":  LAMBDA,
+	"list":    LIST,
+	"#t":      TRUE,
+	"#f":      FALSE,
+	"print":   PRINT,
+	"inspect": INSPECT,
 }
 
 type TokenType string
@@ -50,7 +51,8 @@ const (
 	LAMBDA = "lambda"
 
 	// built-in function
-	PRINT = "print"
+	PRINT   = "print"
+	INSPECT = "inspect"
 )
 
 func LookupSymbol(symbol string) TokenType {

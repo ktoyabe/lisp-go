@@ -36,6 +36,18 @@ func TestReplUsingDefine(t *testing.T) {
 	}
 }
 
+func TestLambda(t *testing.T) {
+	gots := executeRepl(t, []string{
+		"(define add (lambda (x y) (+ x y)))",
+	})
+	wants := []string{
+		"",
+	}
+	if diff := cmp.Diff(wants, gots); diff != "" {
+		t.Error(diff)
+	}
+}
+
 func executeRepl(_ *testing.T, inputs []string) []string {
 	input := strings.Join(inputs, "\n")
 	reader := strings.NewReader(input)

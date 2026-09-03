@@ -2,6 +2,7 @@ package object
 
 import (
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -110,7 +111,7 @@ func (o *ListDataObject) ToString() string {
 }
 
 func (o *ListDataObject) ToDebugString() string {
-	return toDebugString(o)
+	return fmt.Sprintf("[%T] &{Value:[%s]}", o, _listToInspectString(o.Value, " "))
 }
 
 type LambdaObject struct {
@@ -139,9 +140,36 @@ func (o *StringObject) ToDebugString() string {
 }
 
 func listToString(list []Object) string {
+	return "(" + _listToString(list, " ") + ")"
+}
+
+func _listToString(list []Object, delim string) string {
 	strs := []string{}
 	for _, obj := range list {
 		strs = append(strs, obj.ToString())
 	}
-	return "(" + strings.Join(strs, " ") + ")"
+	return strings.Join(strs, delim)
+}
+
+func _listToInspectString(list []Object, delim string) string {
+	strs := []string{}
+	for _, obj := range list {
+		strs = append(strs, obj.ToDebugString())
+	}
+	return strings.Join(strs, delim)
+}
+
+type ObjectPrinter func(obj Object, out io.Writer) (int, error)
+
+func PrintObject(obj Object, out io.Writer) (int, error) {
+	str := obj.ToString()
+	if str != "" {
+		return fmt.Fprintf(out, "%s\n", str)
+	} else {
+		return 0, nil
+	}
+}
+
+func InspectObject(obj Object, out io.Writer) (int, error) {
+	return fmt.Fprintf(out, "%v\n", obj.ToDebugString())
 }

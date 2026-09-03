@@ -5,6 +5,7 @@ import (
 	"lisp-go/env"
 	"lisp-go/object"
 	"math"
+	"os"
 )
 
 func Eval(obj object.Object, env *env.Env) (object.Object, error) {
@@ -106,6 +107,8 @@ func evalList(obj *object.ListObject, env *env.Env) (object.Object, error) {
 			return evalIf(obj, env)
 		case "print":
 			return evalPrint(obj, env)
+		case "inspect":
+			return evalInspect(obj, env)
 		default:
 			v, err := evalSymbol(v, env)
 			if err != nil {
@@ -274,7 +277,7 @@ func evalIf(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	}
 }
 
-func evalPrint(obj *object.ListObject, env *env.Env) (object.Object, error) {
+func evalPrintObject(obj *object.ListObject, env *env.Env, printer object.ObjectPrinter) (object.Object, error) {
 	if len(obj.Value) != 2 {
 		return nil, fmt.Errorf("evalPrint: size must be 2. length=%d", len(obj.Value))
 	}
@@ -283,7 +286,15 @@ func evalPrint(obj *object.ListObject, env *env.Env) (object.Object, error) {
 		return nil, fmt.Errorf("evalPrint: failed to evalObj(obj.Value[1]). error=%v", err)
 	}
 
-	fmt.Printf("%v\n", o.ToDebugString())
+	printer(o, os.Stdout)
 
 	return object.VoidObject{}, nil
+}
+
+func evalPrint(obj *object.ListObject, env *env.Env) (object.Object, error) {
+	return evalPrintObject(obj, env, object.PrintObject)
+}
+
+func evalInspect(obj *object.ListObject, env *env.Env) (object.Object, error) {
+	return evalPrintObject(obj, env, object.InspectObject)
 }
