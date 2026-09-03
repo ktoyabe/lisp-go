@@ -2,21 +2,27 @@ package object
 
 import (
 	"fmt"
+	"strings"
 )
 
-func toStringObject(obj Object) string {
+func toDebugString(obj Object) string {
 	return fmt.Sprintf("[%T] %+v", obj, obj)
 }
 
 type Object interface {
 	ToString() string
+	ToDebugString() string
 }
 
 type VoidObject struct {
 }
 
 func (o VoidObject) ToString() string {
-	return toStringObject(o)
+	return ""
+}
+
+func (o VoidObject) ToDebugString() string {
+	return toDebugString(o)
 }
 
 type IntObject struct {
@@ -24,7 +30,11 @@ type IntObject struct {
 }
 
 func (o *IntObject) ToString() string {
-	return toStringObject(o)
+	return fmt.Sprintf("%d", o.Value)
+}
+
+func (o *IntObject) ToDebugString() string {
+	return toDebugString(o)
 }
 
 type FloatObject struct {
@@ -32,7 +42,11 @@ type FloatObject struct {
 }
 
 func (o *FloatObject) ToString() string {
-	return toStringObject(o)
+	return fmt.Sprintf("%f", o.Value)
+}
+
+func (o *FloatObject) ToDebugString() string {
+	return toDebugString(o)
 }
 
 type SymbolObject struct {
@@ -40,7 +54,11 @@ type SymbolObject struct {
 }
 
 func (o *SymbolObject) ToString() string {
-	return toStringObject(o)
+	return o.Value
+}
+
+func (o *SymbolObject) ToDebugString() string {
+	return toDebugString(o)
 }
 
 type OperatorObject struct {
@@ -48,7 +66,11 @@ type OperatorObject struct {
 }
 
 func (o *OperatorObject) ToString() string {
-	return toStringObject(o)
+	return o.Value
+}
+
+func (o *OperatorObject) ToDebugString() string {
+	return toDebugString(o)
 }
 
 type BoolObject struct {
@@ -56,7 +78,15 @@ type BoolObject struct {
 }
 
 func (o *BoolObject) ToString() string {
-	return toStringObject(o)
+	if o.Value {
+		return "#t"
+	} else {
+		return "#f"
+	}
+}
+
+func (o *BoolObject) ToDebugString() string {
+	return toDebugString(o)
 }
 
 type ListObject struct {
@@ -64,7 +94,11 @@ type ListObject struct {
 }
 
 func (o *ListObject) ToString() string {
-	return toStringObject(o)
+	return listToString(o.Value)
+}
+
+func (o *ListObject) ToDebugString() string {
+	return toDebugString(o)
 }
 
 type ListDataObject struct {
@@ -72,7 +106,11 @@ type ListDataObject struct {
 }
 
 func (o *ListDataObject) ToString() string {
-	return toStringObject(o)
+	return listToString(o.Value)
+}
+
+func (o *ListDataObject) ToDebugString() string {
+	return toDebugString(o)
 }
 
 type LambdaObject struct {
@@ -81,7 +119,11 @@ type LambdaObject struct {
 }
 
 func (o *LambdaObject) ToString() string {
-	return toStringObject(o)
+	return "LAMBDA"
+}
+
+func (o *LambdaObject) ToDebugString() string {
+	return toDebugString(o)
 }
 
 type StringObject struct {
@@ -89,5 +131,17 @@ type StringObject struct {
 }
 
 func (o *StringObject) ToString() string {
-	return toStringObject(o)
+	return o.Value
+}
+
+func (o *StringObject) ToDebugString() string {
+	return toDebugString(o)
+}
+
+func listToString(list []Object) string {
+	strs := []string{}
+	for _, obj := range list {
+		strs = append(strs, obj.ToString())
+	}
+	return "(" + strings.Join(strs, " ") + ")"
 }

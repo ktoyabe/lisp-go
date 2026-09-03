@@ -42,6 +42,9 @@ func Start(in io.Reader, out io.Writer) {
 			fmt.Fprintf(out, "Eval error: %v\n", err)
 			continue
 		}
-		fmt.Fprintf(out, "[%T] %+v\n", result, result)
+		resultStr := result.ToString()
+		if resultStr != "" {
+			fmt.Fprintf(out, "%s\n", resultStr)
+		}
 	}
 }

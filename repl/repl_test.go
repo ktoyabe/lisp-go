@@ -28,7 +28,6 @@ func TestReplUsingDefine(t *testing.T) {
 		"(+ 1 a)",
 	})
 	wants := []string{
-		(object.VoidObject{}).ToString(),
 		(&object.IntObject{Value: 4}).ToString(),
 		"",
 	}

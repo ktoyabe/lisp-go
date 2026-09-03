@@ -255,3 +255,19 @@ func TestListData(t *testing.T) {
 		t.Error(diff)
 	}
 }
+
+func TestPrintData(t *testing.T) {
+	input := `(print 1)`
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.PRINT, Literal: "print"},
+		{Type: token.INT, Literal: "1"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
+}

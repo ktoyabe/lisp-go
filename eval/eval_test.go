@@ -262,6 +262,24 @@ func TestEvalList(t *testing.T) {
 	}
 }
 
+func TestEvalPrintData(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(print \"foobar\")",
+	}
+
+	wants := []object.Object{
+		object.VoidObject{},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
+
 func TestEvalFib(t *testing.T) {
 	env := env.New()
 

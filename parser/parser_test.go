@@ -189,6 +189,17 @@ func TestParseListData(t *testing.T) {
 	}
 }
 
+func TestPrintData(t *testing.T) {
+	input := "(print \"foobar\")"
+	want := []object.Object{
+		&object.SymbolObject{Value: "print"},
+		&object.StringObject{Value: "foobar"},
+	}
+	if diff := testParse(t, input, want); diff != "" {
+		t.Error(diff)
+	}
+}
+
 func testListObject(_ *testing.T, want *object.ListObject, got object.Object) string {
 	got_list, ok := got.(*object.ListObject)
 	if !ok {

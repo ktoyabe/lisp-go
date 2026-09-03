@@ -104,6 +104,8 @@ func evalList(obj *object.ListObject, env *env.Env) (object.Object, error) {
 			return evalDefine(obj, env)
 		case "if":
 			return evalIf(obj, env)
+		case "print":
+			return evalPrint(obj, env)
 		default:
 			v, err := evalSymbol(v, env)
 			if err != nil {
@@ -270,4 +272,18 @@ func evalIf(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	} else {
 		return evalObj(obj.Value[3], env)
 	}
+}
+
+func evalPrint(obj *object.ListObject, env *env.Env) (object.Object, error) {
+	if len(obj.Value) != 2 {
+		return nil, fmt.Errorf("evalPrint: size must be 2. length=%d", len(obj.Value))
+	}
+	o, err := evalObj(obj.Value[1], env)
+	if err != nil {
+		return nil, fmt.Errorf("evalPrint: failed to evalObj(obj.Value[1]). error=%v", err)
+	}
+
+	fmt.Printf("%v\n", o.ToDebugString())
+
+	return object.VoidObject{}, nil
 }
