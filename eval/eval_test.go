@@ -541,3 +541,23 @@ func TestEvalMap(t *testing.T) {
 		}
 	}
 }
+
+func TestEvalLength(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(length (list 2))",
+		"(length (list 1 2 3))",
+	}
+
+	wants := []object.Object{
+		&object.IntObject{Value: 1},
+		&object.IntObject{Value: 3},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}

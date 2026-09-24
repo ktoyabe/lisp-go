@@ -10,6 +10,7 @@ var keywords = map[string]TokenType{
 	"print":   PRINT,
 	"inspect": INSPECT,
 	"map":     MAP,
+	"length":  LENGTH,
 }
 
 type TokenType string
@@ -55,6 +56,7 @@ const (
 	PRINT   = "print"
 	INSPECT = "inspect"
 	MAP     = "map"
+	LENGTH  = "length"
 )
 
 func LookupSymbol(symbol string) TokenType {

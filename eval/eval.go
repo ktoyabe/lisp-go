@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"lisp-go/env"
 	"lisp-go/object"
+	"lisp-go/token"
 	"math"
 	"os"
 )
@@ -113,6 +114,8 @@ func evalList(obj *object.ListObject, env *env.Env) (object.Object, error) {
 			return evalInspect(obj, env)
 		case "map":
 			return evalMap(obj, env)
+		case token.LENGTH:
+			return evalLength(obj, env)
 		default:
 			v, err := evalSymbol(v, env)
 			if err != nil {
@@ -317,6 +320,23 @@ func evalMap(obj *object.ListObject, env *env.Env) (object.Object, error) {
 		newList = append(newList, result)
 	}
 	return &object.ListDataObject{Value: newList}, nil
+}
+
+func evalLength(obj *object.ListObject, env *env.Env) (object.Object, error) {
+	if len(obj.Value) != 2 {
+		return nil, fmt.Errorf("evalMap: list length must be 2. length=%d", len(obj.Value))
+	}
+
+	listData, err := evalObj(obj.Value[1], env)
+	if err != nil {
+		return nil, fmt.Errorf("evalLength: obj.Value[1] failed to evalObj. error=%v", err)
+	}
+	list, ok := (listData).(*object.ListDataObject)
+	if !ok {
+		return nil, fmt.Errorf("evalLegnth: obj.Value[1] must be ListDataObject. type=%T, object=%v", obj.Value[1], obj.Value[1])
+	}
+
+	return &object.IntObject{Value: len(list.Value)}, nil
 }
 
 func evalPrintObject(obj *object.ListObject, env *env.Env, printer object.ObjectPrinter) (object.Object, error) {
