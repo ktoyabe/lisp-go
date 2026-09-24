@@ -61,6 +61,7 @@ const (
 	LENGTH  = "length"
 	RANGE   = "range"
 	FILTER  = "filter"
+	REDUCE  = "reduce"
 )
 
 func LookupSymbol(symbol string) TokenType {

@@ -116,6 +116,8 @@ func evalList(obj *object.ListObject, env *env.Env) (object.Object, error) {
 			return evalMap(obj, env)
 		case token.FILTER:
 			return evalFilter(obj, env)
+		case token.REDUCE:
+			return evalReduce(obj, env)
 		case token.LENGTH:
 			return evalLength(obj, env)
 		case token.RANGE:
@@ -336,6 +338,33 @@ func evalMap(obj *object.ListObject, env *env.Env) (object.Object, error) {
 		newList = append(newList, result)
 	}
 	return &object.ListDataObject{Value: newList}, nil
+}
+
+func evalReduce(obj *object.ListObject, env *env.Env) (object.Object, error) {
+	function, list, err := evalPreApplyFunction(obj, env)
+	if err != nil {
+		return nil, fmt.Errorf("EvalReduce: %v", err)
+	}
+	if len(function.Params) != 2 {
+		return nil, fmt.Errorf("EvalReduce: params of lambda function must be 2. actual=%d", len(function.Params))
+	}
+
+	acc, err := evalObj(list.Value[0], env)
+	if err != nil {
+		return nil, fmt.Errorf("evalReduce: list.Value[0] failed to evalObj. error=%v", err)
+	}
+
+	for i := 1; i < len(list.Value); i += 1 {
+		obj, err := evalObj(list.Value[i], env)
+		if err != nil {
+			return nil, fmt.Errorf("evalReduce: list.Value[%d] failed to evalObj. error=%v", i, err)
+		}
+		acc, err = evalFunctionCall(function, []object.Object{acc, obj}, env)
+		if err != nil {
+			return nil, fmt.Errorf("evalReduce: list.Value[%d] failed to evalFunctionCall. error=%v", i, err)
+		}
+	}
+	return acc, nil
 }
 
 func evalFilter(obj *object.ListObject, env *env.Env) (object.Object, error) {

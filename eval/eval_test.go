@@ -660,3 +660,23 @@ func TestEvalFilterReturnsEmtpyList(t *testing.T) {
 		}
 	}
 }
+
+func TestEvalReduce(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(define sum (lambda (x y) (+ x y)))",
+		"(reduce sum (list 1 2 3 4 5))",
+	}
+
+	wants := []object.Object{
+		object.VoidObject{},
+		&object.IntObject{Value: 15},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
