@@ -134,7 +134,9 @@ func (l *Lexer) readNumber() string {
 
 func (l *Lexer) readSymbol() string {
 	position := l.position
-	for isLetter(l.ch) {
+	// first charactor must be letter.
+	l.readChar()
+	for isLetter(l.ch) || isDigit(l.ch) {
 		l.readChar()
 	}
 	return l.input[position:l.position]

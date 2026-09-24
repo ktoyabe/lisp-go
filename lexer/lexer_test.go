@@ -284,6 +284,33 @@ func TestLambdaArg1(t *testing.T) {
 	}
 }
 
+func TestVariableIncludeNum(t *testing.T) {
+	input := `(define less3 (lambda (x) (< x 3)))`
+
+	tests := []token.Token{
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.DEFINE, Literal: "define"},
+		{Type: token.SYMBOL, Literal: "less3"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.LAMBDA, Literal: "lambda"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.SYMBOL, Literal: "x"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.LESS, Literal: "<"},
+		{Type: token.SYMBOL, Literal: "x"},
+		{Type: token.INT, Literal: "3"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.EOF, Literal: ""},
+	}
+
+	if diff := testLexer(t, input, tests); diff != "" {
+		t.Error(diff)
+	}
+}
+
 func TestPrintData(t *testing.T) {
 	input := `(print 1)`
 

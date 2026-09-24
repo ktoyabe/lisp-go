@@ -615,3 +615,48 @@ func TestEvalRange(t *testing.T) {
 		}
 	}
 }
+
+func TestEvalFilter(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(define less3 (lambda (x) (< x 3)))",
+		"(filter less3 (list 1 2 3 4 3 2 1))",
+	}
+
+	wants := []object.Object{
+		object.VoidObject{},
+		&object.ListDataObject{Value: []object.Object{
+			&object.IntObject{Value: 1},
+			&object.IntObject{Value: 2},
+			&object.IntObject{Value: 2},
+			&object.IntObject{Value: 1},
+		}},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
+
+func TestEvalFilterReturnsEmtpyList(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(define less3 (lambda (x) (< x 3)))",
+		"(filter less3 (list 3 4 5))",
+	}
+
+	wants := []object.Object{
+		object.VoidObject{},
+		&object.ListDataObject{Value: []object.Object{}},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}
