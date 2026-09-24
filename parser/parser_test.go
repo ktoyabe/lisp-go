@@ -293,3 +293,29 @@ func TestParseLambdaArgs1(t *testing.T) {
 		t.Error(diff)
 	}
 }
+
+func TestMap(t *testing.T) {
+	input := "(map (lambda (r) (* r r)) (range 0 10 5))"
+	want := []object.Object{
+		&object.SymbolObject{Value: "map"},
+		&object.LambdaObject{
+			Params: []string{"r"},
+			Body: &object.ListObject{Value: []object.Object{
+				&object.OperatorObject{Value: "*"},
+				&object.SymbolObject{Value: "r"},
+				&object.SymbolObject{Value: "r"},
+			}},
+		},
+		&object.ListObject{
+			Value: []object.Object{
+				&object.SymbolObject{Value: "range"},
+				&object.IntObject{Value: 0},
+				&object.IntObject{Value: 10},
+				&object.IntObject{Value: 5},
+			},
+		},
+	}
+	if diff := testParse(t, input, want); diff != "" {
+		t.Error(diff)
+	}
+}

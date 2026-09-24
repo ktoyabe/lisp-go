@@ -80,6 +80,7 @@ func (p *Parser) parseLambda() (*object.LambdaObject, error) {
 	if err != nil {
 		return nil, err
 	}
+	p.NextToken() // consume last rparen  (lambda (r) (* r r) ''')'''
 	return &object.LambdaObject{Params: params, Body: body}, nil
 }
 
