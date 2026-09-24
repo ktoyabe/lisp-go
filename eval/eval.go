@@ -288,27 +288,36 @@ func evalIf(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	}
 }
 
-func evalMap(obj *object.ListObject, env *env.Env) (object.Object, error) {
+func evalPreApplyFunction(obj *object.ListObject, env *env.Env) (*object.LambdaObject, *object.ListDataObject, error) {
 	if len(obj.Value) != 3 {
-		return nil, fmt.Errorf("evalMap: list length must be 3. length=%d", len(obj.Value))
+		return nil, nil, fmt.Errorf("list length must be 3. length=%d", len(obj.Value))
 	}
 
 	functionObject, err := evalObj(obj.Value[1], env)
 	if err != nil {
-		return nil, fmt.Errorf("evalMap: obj.Value[1] failed to evalObj. error=%v", err)
+		return nil, nil, fmt.Errorf("obj.Value[1] failed to evalObj. error=%v", err)
 	}
 	function, ok := (functionObject).(*object.LambdaObject)
 	if !ok {
-		return nil, fmt.Errorf("evalMap: obj.Value[1] must be LambdaObject. type=%T, object=%v", obj.Value[1], obj.Value[1])
+		return nil, nil, fmt.Errorf("obj.Value[1] must be LambdaObject. type=%T, object=%v", obj.Value[1], obj.Value[1])
 	}
 
 	listObject, err := evalObj(obj.Value[2], env)
 	if err != nil {
-		return nil, fmt.Errorf("evalMap: obj.Value[2] failed to evalObj. error=%v", err)
+		return nil, nil, fmt.Errorf("obj.Value[2] failed to evalObj. error=%v", err)
 	}
 	list, ok := (listObject).(*object.ListDataObject)
 	if !ok {
-		return nil, fmt.Errorf("evalMap: obj.Value[2] must be ListDataObject. type=%T, object=%v", obj.Value[2], obj.Value[2])
+		return nil, nil, fmt.Errorf("obj.Value[2] must be ListDataObject. type=%T, object=%v", obj.Value[2], obj.Value[2])
+	}
+
+	return function, list, nil
+}
+
+func evalMap(obj *object.ListObject, env *env.Env) (object.Object, error) {
+	function, list, err := evalPreApplyFunction(obj, env)
+	if err != nil {
+		return nil, fmt.Errorf("EvalMap: %v", err)
 	}
 
 	newList := []object.Object{}
@@ -327,28 +336,10 @@ func evalMap(obj *object.ListObject, env *env.Env) (object.Object, error) {
 }
 
 func evalFilter(obj *object.ListObject, env *env.Env) (object.Object, error) {
-	if len(obj.Value) != 3 {
-		return nil, fmt.Errorf("evalFilter: list length must be 3. length=%d", len(obj.Value))
-	}
-
-	functionObject, err := evalObj(obj.Value[1], env)
+	function, list, err := evalPreApplyFunction(obj, env)
 	if err != nil {
-		return nil, fmt.Errorf("evalFilter: obj.Value[1] failed to evalObj. error=%v", err)
+		return nil, fmt.Errorf("EvalMap: %v", err)
 	}
-	function, ok := (functionObject).(*object.LambdaObject)
-	if !ok {
-		return nil, fmt.Errorf("evalFilter: obj.Value[1] must be LambdaObject. type=%T, object=%v", obj.Value[1], obj.Value[1])
-	}
-
-	listObject, err := evalObj(obj.Value[2], env)
-	if err != nil {
-		return nil, fmt.Errorf("evalFilter: obj.Value[2] failed to evalObj. error=%v", err)
-	}
-	list, ok := (listObject).(*object.ListDataObject)
-	if !ok {
-		return nil, fmt.Errorf("evalFilter: obj.Value[2] must be ListDataObject. type=%T, object=%v", obj.Value[2], obj.Value[2])
-	}
-
 	newList := []object.Object{}
 	for i, o := range list.Value {
 		obj, err := evalObj(o, env)
