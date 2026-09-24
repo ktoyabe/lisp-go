@@ -561,3 +561,35 @@ func TestEvalLength(t *testing.T) {
 		}
 	}
 }
+
+func TestEvalRange(t *testing.T) {
+	env := env.New()
+
+	inputs := []string{
+		"(range 0 6 2)",
+		"(range 1 2 1)",
+		"(range 0 1 2)",
+	}
+
+	wants := []object.Object{
+		&object.ListDataObject{Value: []object.Object{
+			&object.IntObject{Value: 0},
+			&object.IntObject{Value: 2},
+			&object.IntObject{Value: 4},
+		},
+		},
+		&object.ListDataObject{Value: []object.Object{
+			&object.IntObject{Value: 1},
+		},
+		},
+		&object.ListDataObject{Value: []object.Object{
+			&object.IntObject{Value: 0},
+		}},
+	}
+
+	for i, input := range inputs {
+		if diff := testEvalObject(t, input, env, wants[i]); diff != "" {
+			t.Error(diff)
+		}
+	}
+}

@@ -116,6 +116,8 @@ func evalList(obj *object.ListObject, env *env.Env) (object.Object, error) {
 			return evalMap(obj, env)
 		case token.LENGTH:
 			return evalLength(obj, env)
+		case token.RANGE:
+			return evalRange(obj, env)
 		default:
 			v, err := evalSymbol(v, env)
 			if err != nil {
@@ -337,6 +339,45 @@ func evalLength(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	}
 
 	return &object.IntObject{Value: len(list.Value)}, nil
+}
+
+func evalRange(obj *object.ListObject, env *env.Env) (object.Object, error) {
+	if len(obj.Value) != 4 {
+		return nil, fmt.Errorf("evalRange: list length must be 4. length=%d", len(obj.Value))
+	}
+
+	beginObj, err := evalObj(obj.Value[1], env)
+	if err != nil {
+		return nil, fmt.Errorf("evalRange: obj.Value[1] failed to evalObj. error=%v", err)
+	}
+	begin, ok := beginObj.(*object.IntObject)
+	if !ok {
+		return nil, fmt.Errorf("evalLength: obj.Value[1] must be *object.IntObject. type=%T, value=%v", beginObj, beginObj)
+	}
+
+	endObj, err := evalObj(obj.Value[2], env)
+	if err != nil {
+		return nil, fmt.Errorf("evalRange: obj.Value[2] failed to evalObj. error=%v", err)
+	}
+	end, ok := endObj.(*object.IntObject)
+	if !ok {
+		return nil, fmt.Errorf("evalLength: obj.Value[2] must be *object.IntObject. type=%T, value=%v", endObj, endObj)
+	}
+
+	stepObj, err := evalObj(obj.Value[3], env)
+	if err != nil {
+		return nil, fmt.Errorf("evalRange: obj.Value[3] failed to evalObj. error=%v", err)
+	}
+	step, ok := stepObj.(*object.IntObject)
+	if !ok {
+		return nil, fmt.Errorf("evalLength: obj.Value[3] must be *object.IntObject. type=%T, value=%v", stepObj, stepObj)
+	}
+
+	list := []object.Object{}
+	for i := begin.Value; i < end.Value; i += step.Value {
+		list = append(list, &object.IntObject{Value: i})
+	}
+	return &object.ListDataObject{Value: list}, nil
 }
 
 func evalPrintObject(obj *object.ListObject, env *env.Env, printer object.ObjectPrinter) (object.Object, error) {
