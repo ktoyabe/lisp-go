@@ -319,6 +319,9 @@ func evalMap(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	if err != nil {
 		return nil, fmt.Errorf("EvalMap: %v", err)
 	}
+	if len(function.Params) != 1 {
+		return nil, fmt.Errorf("EvalMap: params of lambda function must be 1. actual=%d", len(function.Params))
+	}
 
 	newList := []object.Object{}
 	for i, o := range list.Value {
@@ -340,6 +343,10 @@ func evalFilter(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	if err != nil {
 		return nil, fmt.Errorf("EvalMap: %v", err)
 	}
+	if len(function.Params) != 1 {
+		return nil, fmt.Errorf("EvalFilter: params of lambda function must be 1. actual=%d", len(function.Params))
+	}
+
 	newList := []object.Object{}
 	for i, o := range list.Value {
 		obj, err := evalObj(o, env)
@@ -379,36 +386,33 @@ func evalLength(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	return &object.IntObject{Value: len(list.Value)}, nil
 }
 
+func evalAndConvertIntObject(obj object.Object, env *env.Env) (*object.IntObject, error) {
+	o, err := evalObj(obj, env)
+	if err != nil {
+		return nil, fmt.Errorf("failed to evalObj. error=%v, obj=%v", err, obj)
+	}
+	intObj, ok := o.(*object.IntObject)
+	if !ok {
+		return nil, fmt.Errorf("failed to conver *object.IntObject. type=%T, value=%v", o, o)
+	}
+	return intObj, nil
+}
+
 func evalRange(obj *object.ListObject, env *env.Env) (object.Object, error) {
 	if len(obj.Value) != 4 {
 		return nil, fmt.Errorf("evalRange: list length must be 4. length=%d", len(obj.Value))
 	}
-
-	beginObj, err := evalObj(obj.Value[1], env)
+	begin, err := evalAndConvertIntObject(obj.Value[1], env)
 	if err != nil {
-		return nil, fmt.Errorf("evalRange: obj.Value[1] failed to evalObj. error=%v", err)
+		return nil, fmt.Errorf("evalRange obj.Value[1]: %v", err)
 	}
-	begin, ok := beginObj.(*object.IntObject)
-	if !ok {
-		return nil, fmt.Errorf("evalLength: obj.Value[1] must be *object.IntObject. type=%T, value=%v", beginObj, beginObj)
-	}
-
-	endObj, err := evalObj(obj.Value[2], env)
+	end, err := evalAndConvertIntObject(obj.Value[2], env)
 	if err != nil {
-		return nil, fmt.Errorf("evalRange: obj.Value[2] failed to evalObj. error=%v", err)
+		return nil, fmt.Errorf("evalRange obj.Value[2]: %v", err)
 	}
-	end, ok := endObj.(*object.IntObject)
-	if !ok {
-		return nil, fmt.Errorf("evalLength: obj.Value[2] must be *object.IntObject. type=%T, value=%v", endObj, endObj)
-	}
-
-	stepObj, err := evalObj(obj.Value[3], env)
+	step, err := evalAndConvertIntObject(obj.Value[3], env)
 	if err != nil {
-		return nil, fmt.Errorf("evalRange: obj.Value[3] failed to evalObj. error=%v", err)
-	}
-	step, ok := stepObj.(*object.IntObject)
-	if !ok {
-		return nil, fmt.Errorf("evalLength: obj.Value[3] must be *object.IntObject. type=%T, value=%v", stepObj, stepObj)
+		return nil, fmt.Errorf("evalRange obj.Value[3]: %v", err)
 	}
 
 	list := []object.Object{}
